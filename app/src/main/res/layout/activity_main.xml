@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_page"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff5d6"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/store_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="51dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/montrose_d_d"
+        android:textColor="@color/purple_700"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/cartHeaderLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/cartHeaderLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="579dp"
+        android:text="Pick Your Poison"
+        android:textColor="@color/purple_700"
+        android:textSize="18sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/donutsImage"
+        android:layout_width="188dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="130dp"
+        android:background="#FFFFFF"
+        android:maxWidth="188dp"
+        android:maxHeight="200dp"
+        android:onClick="imageClicked"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cartHeaderLabel"
+        app:srcCompat="@drawable/donut_batch" />
+
+    <ImageButton
+        android:id="@+id/beveragesImage"
+        android:layout_width="188dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="130dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:background="#FFFFFF"
+        android:maxWidth="188dp"
+        android:maxHeight="200dp"
+        android:onClick="imageClicked"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cartHeaderLabel"
+        app:srcCompat="@drawable/beverages" />
+
+    <ImageButton
+        android:id="@+id/bagelsImage"
+        android:layout_width="188dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="44dp"
+        android:background="#FFFFFF"
+        android:maxWidth="188dp"
+        android:maxHeight="200dp"
+        android:onClick="imageClicked"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/donutsImage"
+        app:srcCompat="@drawable/bagels" />
+
+    <ImageButton
+        android:id="@+id/sandwichesImage"
+        android:layout_width="188dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="44dp"
+        android:background="#FFFFFF"
+        android:maxWidth="188dp"
+        android:maxHeight="200dp"
+        android:onClick="imageClicked"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/beveragesImage"
+        app:srcCompat="@drawable/deli_sandwiches" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
