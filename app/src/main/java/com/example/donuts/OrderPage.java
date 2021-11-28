@@ -2,7 +2,9 @@ package com.example.donuts;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,10 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class OrderPage extends AppCompatActivity {
 
@@ -37,6 +41,9 @@ public class OrderPage extends AppCompatActivity {
 
 
 
+    //Shared preferences object
+    private SharedPreferences myPrefs;
+
 
 
     //All the values we will add to the Order object orderItem
@@ -53,6 +60,9 @@ public class OrderPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_page);
+
+        //Initialize shared preferences object myPref
+        myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
 
         //Set the checkboxes so we can configure them properly, and then put them into an array
         checkBoxes = new ArrayList<>();
@@ -203,6 +213,29 @@ public class OrderPage extends AppCompatActivity {
 
         if (addToCartButton.getText().toString().equals("ADD TO CART")) {
 
+            //Shared preference code
+            //Fall back on
+
+            //Initialize editor for myPref
+//            SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+//            //Initialize gson object so it's possible to save objects in sharedPreferences object
+//            Gson gson = new Gson();
+//            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
+//
+//            String jsonFormattedObject = gson.toJson(orderItem);
+//            myPrefEditor.putString("lastOrder", jsonFormattedObject);
+//            myPrefEditor.commit();
+//
+//            returnToMain = new Intent(this, MainActivity.class);
+//            returnToMain.putExtra("order", "order");
+//            startActivity(returnToMain);
+
+
+
+
+
+
+            //Fall back on
             returnToMain = new Intent(this, MainActivity.class);
             orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
             returnToMain.putExtra("order", orderItem);
@@ -212,6 +245,7 @@ public class OrderPage extends AppCompatActivity {
 
         else if (addToCartButton.getText().toString().equals("EDIT ITEM")){
 
+            //Will have to change this so that it edits
             returnToCart = new Intent(this, ShoppingCartPage.class);
             orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
             returnToCart.putExtra("editedOrder", orderItem);

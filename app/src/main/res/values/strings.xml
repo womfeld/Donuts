@@ -1,4 +1,5 @@
 <resources>
+    <string name="file_name">Note.json</string>
     <string name="app_name">Donuts</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

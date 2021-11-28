@@ -1,6 +1,9 @@
 package com.example.donuts;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,9 +12,30 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    //Shared preferences object
+    private SharedPreferences myPrefs;
 
 
 
 
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,15 +66,55 @@ public class MainActivity extends AppCompatActivity {
 
         setTitle("Montrose Donuts and Deli");
 
+
+        //Initialize shared preferences object myPref
+        myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+        //Initialize editor for myPref
+        SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+        //Initialize gson object so it's possible to save objects in sharedPreferences object
+        Gson gson = new Gson();
+
+
+
         Intent intent = getIntent();
 
         //This section of code receives the intent with the menu (titles and images) and saves
         //the menu titles into menuList and the menu images into menuImages
         if (intent.hasExtra("order")) {
 
+
+
+
+            //Preference code
+            //Fall back on
+            /////////////////////////
+//            String jsonFormattedObject = myPrefs.getString("lastOrder", "");
+//
+//            Set<String> s = myPrefs.getStringSet("orderList", new HashSet<>());
+//
+//            s.add(jsonFormattedObject);
+//
+//            //Must dp this so set is saved
+//            myPrefEditor.clear();
+//
+//            myPrefEditor.putStringSet("orderList", s);
+//            myPrefEditor.commit();
+//
+//            Toast.makeText(this, "Item successfully added to cart!", Toast.LENGTH_SHORT).show();
+
+            ///////////////////////////
+
+
+
+
+              //Fall back on
             Order orderItem = (Order) intent.getSerializableExtra("order");
-            userOrders.add(orderItem);
+            //userOrders.add(orderItem);
+            saveOrderToCart(orderItem);
             Toast.makeText(this, "Item successfully added to cart!", Toast.LENGTH_SHORT).show();
+
+
+
 
         }
 
@@ -67,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_menu, menu);
@@ -85,9 +155,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
             return true;
         } else if (item.getItemId() == R.id.goToShoppingCart) {
+
             Intent goToCart = new Intent(this, ShoppingCartPage.class);
+            //Fall back on
             goToCart.putExtra("orders", userOrders);
             startActivity(goToCart);
+
+            //Fall back on for shared preferences
+//            goToCart.putExtra("orders", "userOrders");
+//            startActivity(goToCart);
+
             return true;
         } else if (item.getItemId() == R.id.goToCreateAccount) {
             Intent goToCreateAcc = new Intent(this, CreateAccount.class);
@@ -141,6 +218,87 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void saveOrderToCart(Order order) {
+
+
+        //This creates the JSON file to put the name and description contents in
+        //If deciding to move forward with this app, will be more efficient to use Broadcast and Receive
+        userOrders.addAll(loadFile());
+        userOrders.add(order);
+
+
+        try {
+            FileOutputStream fos = getApplicationContext().
+                    openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
+
+            PrintWriter printWriter = new PrintWriter(fos);
+            printWriter.print(userOrders);
+            printWriter.close();
+            fos.close();
+
+
+
+
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private ArrayList<Order> loadFile() {
+
+        ArrayList<Order> orders = new ArrayList<>();
+        try {
+            InputStream is = getApplicationContext().openFileInput("Note.json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+
+
+            JSONArray jsonArray = new JSONArray(sb.toString());
+            for (int i=0; i < jsonArray.length(); i++) {
+
+                JSONObject jObject = jsonArray.getJSONObject(i);
+                String itemName = jObject.getString("itemName");
+                int quantity = jObject.getInt("quantity");
+                double itemPrice = jObject.getDouble("itemPrice");
+                int img = jObject.getInt("image");
+
+                JSONArray customItemsJSON = jObject.getJSONArray("customItems");
+                ArrayList<String> items = new ArrayList<>();
+                for (int j = 0; j < customItemsJSON.length(); j++) {
+                    items.add(customItemsJSON.getString(j));
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    orders.add(new Order(itemName, items, quantity, itemPrice, img));
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            //Toast.makeText(this, "No JSON Note File Present", Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return orders;
+    }
+
+
+
+
 
 
 }

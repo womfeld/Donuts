@@ -24,16 +24,23 @@
         android:id="@+id/cartRecyclerView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:paddingTop="50dp"
+        android:paddingBottom="120dp"
+        app:layout_constraintBottom_toTopOf="@+id/checkoutButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cartHeaderLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/cartHeaderLabel"
+        app:layout_constraintVertical_bias="0.336" />
 
     <Button
         android:id="@+id/checkoutButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="32dp"
         android:background="#CE0000"
         android:onClick="checkOutClicked"
         android:text="Checkout"

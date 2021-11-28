@@ -1,6 +1,14 @@
 package com.example.donuts;
 
+import android.util.JsonWriter;
+
+import androidx.annotation.NonNull;
+
+import org.json.JSONArray;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 public class Order implements Serializable {
@@ -68,6 +76,46 @@ public class Order implements Serializable {
 
     public void setImage(int img) {
         this.image = img;
+    }
+
+
+    @NonNull
+    public String toString() {
+
+        try {
+
+
+            StringWriter sw = new StringWriter();
+            JsonWriter jsonWriter = new JsonWriter(sw);
+            jsonWriter.setIndent("   ");
+            jsonWriter.beginObject();
+            jsonWriter.name("itemName").value(getName());
+            jsonWriter.name("quantity").value(getQuantity());
+            jsonWriter.name("itemPrice").value(getItemPrice());
+            jsonWriter.name("image").value(getImage());
+
+            //Begins array within object for custom items
+            jsonWriter.name("customItems").beginArray();
+            for (String s : getCustomItems()) {
+                jsonWriter.value(s);
+            }
+            jsonWriter.endArray();
+
+            jsonWriter.endObject();
+            jsonWriter.close();
+            return sw.toString();
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+
+        return "";
+
     }
 
 }
