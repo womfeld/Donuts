@@ -39,7 +39,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartViewHolder> {
         holder.cartSlotTitle.setText(o.getName());
 
         //CHANGE THIS LATER
-        String formattedDescription = "Toppings: " + o.getCustomItemsString().replace("[", "");
+        String formattedDescription = "Notes: " + o.getCustomItemsString().replace("[", "");
         formattedDescription = formattedDescription.replace("]", "");
         holder.description.setText(formattedDescription);
         holder.quantityOfItem.setText(o.getQuantity() + "");

@@ -37,8 +37,8 @@
 
     <Button
         android:id="@+id/checkoutButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="165dp"
+        android:layout_height="35dp"
         android:layout_margin="16dp"
         android:layout_marginBottom="32dp"
         android:background="#CE0000"
@@ -46,7 +46,31 @@
         android:text="Checkout"
         android:textColor="#FFF"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="Total:"
+        app:layout_constraintBaseline_toBaselineOf="@+id/cartPriceLabel"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/cartPriceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginEnd="118dp"
+        android:layout_marginRight="118dp"
+        android:text="$0.00"
+        app:layout_constraintBaseline_toBaselineOf="@+id/checkoutButton"
+        app:layout_constraintEnd_toStartOf="@+id/checkoutButton"
+        app:layout_constraintStart_toEndOf="@+id/textView5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -46,6 +46,9 @@ public class OrderPage extends AppCompatActivity {
 
 
 
+    //Item type
+    private String type;
+
     //All the values we will add to the Order object orderItem
     private String itemName;
     public int itemQuantity;
@@ -77,8 +80,6 @@ public class OrderPage extends AppCompatActivity {
         checkBoxFive = findViewById(R.id.checkBox5);
         checkBoxes.add(checkBoxFive);
 
-        //LEAVE THIS FOR NOW
-        checkBoxFive.setVisibility(View.INVISIBLE);
 
         //Intialize the addToCart Button
         addToCartButton = findViewById(R.id.addToCart);
@@ -98,12 +99,14 @@ public class OrderPage extends AppCompatActivity {
         Intent intent = getIntent();
 
         //This will be the intent when the user chooses from the menu
-        if (intent.hasExtra("name") && intent.hasExtra("image")) {
+        if (intent.hasExtra("name") && intent.hasExtra("image") && intent.hasExtra("type")) {
 
             itemName = intent.getStringExtra("name");
 
             //Since we hardcoded images, default value will never be zero
             itemImage = intent.getIntExtra("image", 0);
+
+            type = intent.getStringExtra("type");
 
             addToCartButton.setText("ADD TO CART");
 
@@ -120,7 +123,9 @@ public class OrderPage extends AppCompatActivity {
             h.addAll(o.getCustomItems());
 
 
-
+            //Will see what custom items were selected on order user wishes to edit,
+            //then will proceed to recheck those items
+            //Fall back on
             for (CheckBox c : checkBoxes) {
                 String s = c.getText().toString();
                 if (h.contains(s)) {
@@ -137,6 +142,35 @@ public class OrderPage extends AppCompatActivity {
         else {
 
         }
+
+
+        //Change quantityAdjuster to increment by 12s.  Do this inside the onclick listener.
+        //Pass the text on the quantity adjuster to a method that converts a string to an int and
+        //increments that int by 12.  Then, set text of quantityAdjuster to what the method returns
+
+        //We need to set checkbox text and visibility based on the type of menu item being ordered
+        switch (type) {
+            case "Donut":
+                checkBoxFive.setVisibility(View.INVISIBLE);
+                break;
+            case "Beverage":
+                checkBoxOne.setText("Milk");
+                checkBoxTwo.setText("Sugar");
+                checkBoxThree.setText("Decaf");
+                checkBoxFour.setText("Cream");
+                checkBoxFive.setVisibility(View.INVISIBLE);
+                break;
+            case "Bagel":
+                checkBoxOne.setText("By the Dozen");
+                checkBoxTwo.setText("Cream Cheese");
+                checkBoxThree.setVisibility(View.INVISIBLE);
+                checkBoxFour.setVisibility(View.INVISIBLE);
+                checkBoxFive.setVisibility(View.INVISIBLE);
+            default:
+                ;
+
+        }
+
 
 
 
@@ -180,20 +214,6 @@ public class OrderPage extends AppCompatActivity {
 
     }
 
-    public void calculatePriceClicked(View v) {
-
-        String input = quantityAdjuster.getNumber();
-        itemQuantity = Integer.parseInt(input);
-
-        //Set the price of the menu item
-        //I'm just saying the price of a donit is $1.50 for now (will change later)
-        itemPrice = 1.5 * itemQuantity;
-        //String formattedString = "$" + String.format(Locale.US, "%.2f", itemPrice);
-        priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
-
-        addToCartButton.setEnabled(true);
-
-    }
 
 
     public void addToCartClicked(View v) {

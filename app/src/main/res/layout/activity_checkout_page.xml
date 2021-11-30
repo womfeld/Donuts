@@ -112,21 +112,21 @@
         android:layout_marginRight="45dp" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/checkoutPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="27dp"
+        android:layout_marginLeft="27dp"
         android:layout_marginBottom="180dp"
-        android:text="Total:  $4.50"
+        android:text="Total:  $0.00"
         android:textSize="25dp"
-        android:textStyle="bold"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="27dp" />
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/checkoutRewardLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"

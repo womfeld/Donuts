@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,11 +30,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -183,27 +177,30 @@ public class MainActivity extends AppCompatActivity {
 
         if (v == donutsImage) {
             //Donut menu item titles
-            String[] donutsList = {"Chocolate Donuts", "Powdered Donuts", "Glazed Donuts", "Jelly Donuts", "Apple Fritters"};
+            String[] donutsList = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter"};
             //Images of the donut menu items
-            int[] donutImagesList = {R.drawable.chocolate_donuts, R.drawable.powdered_donuts, R.drawable.glazed_donuts,
-                    R.drawable.jelly_donuts, R.drawable.apple_fritters};
+            int[] donutImagesList = {R.drawable.donuts_chocolate, R.drawable.donuts_powdered, R.drawable.donuts_glazed,
+                    R.drawable.donuts_jelly, R.drawable.donuts_apple_fritters};
             i.putExtra("menu", donutsList);
             i.putExtra("images", donutImagesList);
+            i.putExtra("type", "Donut");
         }
 
         if (v==beveragesImage) {
-            String[] beveragesList = {"Coffee"};
-            int[] beverageImagesList = {};
+            String[] beveragesList = {"Coffee", "Iced Coffee", "Latte", "Macchiato"};
+            int[] beverageImagesList = {R.drawable.beverages_coffee, R.drawable.beverages_iced_coffee,
+                    R.drawable.beverages_latte, R.drawable.beverages_macchiato};
             i.putExtra("menu", beveragesList);
             i.putExtra("images", beverageImagesList);
-
+            i.putExtra("type", "Beverage");
         }
 
         if (v == bagelsImage) {
-            String[] bagelsList = {};
-            int[] bagelImagesList = {};
+            String[] bagelsList = {"Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
+            int[] bagelImagesList = {R.drawable.bagels_plain, R.drawable.bagels_sesame, R.drawable.bagels_cinnamon};
             i.putExtra("menu", bagelsList);
             i.putExtra("images", bagelImagesList);
+            i.putExtra("type", "Bagel");
 
         }
 
@@ -237,9 +234,6 @@ public class MainActivity extends AppCompatActivity {
             printWriter.print(userOrders);
             printWriter.close();
             fos.close();
-
-
-
 
         } catch (Exception e) {
             e.getStackTrace();

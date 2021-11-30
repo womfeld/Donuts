@@ -2,23 +2,23 @@ package com.example.donuts;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,23 +31,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 public class ShoppingCartPage extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
 
     //On back pressed, we return to the home screen
 
-    //Also need to load orders from the database
-
-    //GOING TO HAVE TO EDIT THIS SO WE CAN ADD MULTIPLE ORDERS TO THE CART,
-    //AND THEN WHEN WE GO TO THE HOMESCREEN AND HIT MY CART, THE NEWLY ADDED
-    //ORDERS ARE PRESENT
-
+    public TextView priceLabel;
+    public double totalPrice;
 
     RecyclerView recyclerView;
     RecyclerView.Adapter cAdapter;
@@ -71,6 +64,8 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_shopping_cart_page);
 
         setTitle("Shopping Cart");
+
+        priceLabel = findViewById(R.id.cartPriceLabel);
 
         //Initialize shared preferences object myPref
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
@@ -146,23 +141,50 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
 
         }
-        //counterButton.setNumber("1");
+        else {
+            //If error occurred
+        }
+
+        //Set the total price label
+
+        for (Order o : ordersList) {
+            totalPrice = totalPrice + o.getItemPrice();
+        }
+        priceLabel.setText("$"+String.format(Locale.US, "%.2f",totalPrice));
 
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        outState.putSerializable("ordersList", ordersList);
-//        super.onSaveInstanceState(outState);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//        this.ordersList = (ArrayList<Order>) savedInstanceState.getSerializable("ordersList");
-//    }
-//
-//
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.shopping_cart_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+
+        // Now check for menu items
+        if (item.getItemId() == R.id.home_icon_cartPage) {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+            return true;
+        } else if (item.getItemId() == R.id.clear_icon) {
+            ordersList.clear();;
+            saveCart();
+            cAdapter.notifyDataSetChanged();
+            totalPrice = 0;
+            priceLabel.setText("$"+String.format(Locale.US, "%.2f",totalPrice));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+
+    //Edit Button Code in Cart Adapter
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -252,6 +274,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
     public void checkOutClicked (View v) {
 
         Intent goToCheckout = new Intent(this, CheckoutPage.class);
+        goToCheckout.putExtra("totalPrice", totalPrice);
         startActivity(goToCheckout);
     }
 
