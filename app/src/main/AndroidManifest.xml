@@ -11,14 +11,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Donuts"
         tools:replace="android:theme">
-        <activity android:name=".InventoryPage"></activity>
+        <activity android:name=".InventoryUpdatePage"></activity>
         <activity android:name=".LoginPage" />
         <activity android:name=".CreateAccount" />
         <activity android:name=".CheckoutPage" />
         <activity android:name=".ShoppingCartPage" />
         <activity android:name=".OrderPage" />
         <activity android:name=".MenuOptionsPage" />
-        <activity android:name=".ManagerPage" />
+        <activity android:name=".UserPortal" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

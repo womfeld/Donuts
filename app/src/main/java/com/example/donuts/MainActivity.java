@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Home Page", Toast.LENGTH_SHORT).show();
             return true;
         } else if (item.getItemId() == R.id.goToManagerPage) {
-            Intent i = new Intent(this, ManagerPage.class);
+            Intent i = new Intent(this, UserPortal.class);
             startActivity(i);
             return true;
         } else if (item.getItemId() == R.id.goToShoppingCart) {

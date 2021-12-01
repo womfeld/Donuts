@@ -7,6 +7,20 @@
     android:orientation="vertical"
     tools:context=".ShoppingCartPage">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.91" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.99" />
+
     <TextView
         android:id="@+id/cartHeaderLabel"
         android:layout_width="wrap_content"
@@ -25,30 +39,29 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="24dp"
         android:paddingTop="50dp"
         android:paddingBottom="120dp"
-        app:layout_constraintBottom_toTopOf="@+id/checkoutButton"
+        app:layout_constraintBottom_toTopOf="@+id/guideline12"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cartHeaderLabel"
-        app:layout_constraintVertical_bias="0.336" />
+        app:layout_constraintVertical_bias="0.313" />
 
     <Button
         android:id="@+id/checkoutButton"
         android:layout_width="165dp"
         android:layout_height="35dp"
         android:layout_margin="16dp"
-        android:layout_marginBottom="32dp"
         android:background="#CE0000"
         android:onClick="checkOutClicked"
         android:text="Checkout"
         android:textColor="#FFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cartPriceLabel"
+        app:layout_constraintTop_toTopOf="@+id/guideline12"
+        app:layout_constraintVertical_bias="0.608" />
 
     <TextView
         android:id="@+id/textView5"
@@ -57,6 +70,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="Total:"
+        android:textColor="#000000"
+        android:textSize="19sp"
+        android:textStyle="bold"
         app:layout_constraintBaseline_toBaselineOf="@+id/cartPriceLabel"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -64,13 +80,14 @@
         android:id="@+id/cartPriceLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginLeft="25dp"
-        android:layout_marginEnd="118dp"
-        android:layout_marginRight="118dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginLeft="36dp"
         android:text="$0.00"
-        app:layout_constraintBaseline_toBaselineOf="@+id/checkoutButton"
-        app:layout_constraintEnd_toStartOf="@+id/checkoutButton"
-        app:layout_constraintStart_toEndOf="@+id/textView5" />
+        android:textColor="#000000"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/guideline16"
+        app:layout_constraintStart_toEndOf="@+id/textView5"
+        app:layout_constraintTop_toTopOf="@+id/guideline12" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -78,7 +78,7 @@ public class Order implements Serializable {
 
     public String getType() { return type; }
 
-    public boolean getIsReedemed(boolean b) {return isRedeemed; }
+    public boolean getIsReedemed() {return isRedeemed; }
 
     public void setQuantity(int q) {
         this.quantity = q;

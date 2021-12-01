@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.Locale;
@@ -11,12 +13,10 @@ import java.util.Locale;
 public class CheckoutPage extends AppCompatActivity {
 
     TextView priceLabel;
+    public double flatRatePrice;
     public double totalPrice;
 
-    TextView rewardPointsLabel;
-    public int rewardPoints;
-
-    private int rewardPointsEarned;
+    public Switch pickUpOtion;
 
 
     @Override
@@ -27,15 +27,7 @@ public class CheckoutPage extends AppCompatActivity {
         setTitle("Checkout");
 
         priceLabel = findViewById(R.id.checkoutPriceLabel);
-        rewardPointsLabel = findViewById(R.id.checkoutRewardLabel);
-
-
-        //Initialize rewardPoints
-        //rewardPoints will be pulled from sharedPreferences
-        //Remember, the sharedPreference object is to be initialized after
-        //user logs in and is to be filled filled with info from database
-
-        rewardPoints = 11; //TEMPORARY VALUE!!!!
+        pickUpOtion = findViewById(R.id.switch1);
 
 
 
@@ -44,12 +36,22 @@ public class CheckoutPage extends AppCompatActivity {
         if (intent.hasExtra("totalPrice")) {
 
             totalPrice = intent.getDoubleExtra("totalPrice", 0);
+            flatRatePrice = totalPrice;
             priceLabel.setText("Total: " + "$"+String.format(Locale.US, "%.2f",totalPrice));
         }
 
         else {
 
+            //Error of some kind
+
         }
+
+
+
+
+
+
+
 
 
 
@@ -58,32 +60,34 @@ public class CheckoutPage extends AppCompatActivity {
 
 
 
+    public void switchClicked(View v) {
+
+        if (((Switch) v).isChecked()) {
+            if (totalPrice > 0) {
+                totalPrice = totalPrice + totalPrice * 0.2;
+            }
+            else {
+                totalPrice = 1.79;
+            }
+
+        }
+        else {
+
+            totalPrice = flatRatePrice;
+
+        }
+
+        priceLabel.setText("Total: " + "$"+String.format(Locale.US, "%.2f",totalPrice));
+
+    }
 
 
 
 
-//
-//    //Maybe make separate functions that handle reward points for drinks, donuts, and bagels
-//    //Occurs after clicking redeem
-//    //Make sure to update database and sharedPreferences as well
-//
-//    //Function for donuts
-//    //In the loop statement, add && numOfDonuts > 0
-//        while (rewardPoints >= 8 && totalPrice > 0) {
-//
-//        //We are assuming 8 for donut or bagel or drink
-//        //Later, 10 for drink and 6 for bagel
-//
-//        //Maybe count the number of donuts, bagels, and or drinks and send in intent extra
-//        //from shopping cart page.  This way, we can use this code:
-//
-//        //if (numOfDrinks > 0) {
-//        // rewardPoints = rewardPoints - 10
-//
-//        totalPrice = totalPrice - 1.5;
-//        rewardPoints = rewardPoints - 8;
-//
-//    }
+    public  void editOrderClicked(View v) {
+        Intent i = new Intent(this, ShoppingCartPage.class);
+        startActivity(i);
+    }
 
 
 

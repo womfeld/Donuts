@@ -137,6 +137,7 @@ public class OrderPage extends AppCompatActivity {
             itemName = o.getName();
             itemImage = o.getImage();
             type = o.getType();
+            isRedeemed = o.getIsReedemed();
 
             setCheckBoxNames(type);
 
@@ -192,7 +193,7 @@ public class OrderPage extends AppCompatActivity {
 
 
         //Check to see if user is eligible for reward
-        if (getNumberOfMaximumFreeItems() >= 1) {
+        if (getNumberOfMaximumFreeItems(rewardPoints) >= 1) {
             redeemButton.setEnabled(true);
         }
 
@@ -270,13 +271,13 @@ public class OrderPage extends AppCompatActivity {
     //Alert dialog asking how many items user wishes to redeem (text edit that gives note of the max they can redeem)
 
     //Find out how many free instances of single item they can POTENTIALLY get based on their points
-    public int getNumberOfMaximumFreeItems() {
+    public int getNumberOfMaximumFreeItems(int points) {
 
         //5 bagel
         //8 donut
         //11 drink
 
-        int remainingPoints = rewardPoints;
+        int remainingPoints = points;
         int rewardsAvailable = 0;
 
 
@@ -314,7 +315,8 @@ public class OrderPage extends AppCompatActivity {
 
     public void redeemRewardClicked(View v) {
 
-        int rewardsAvailable = getNumberOfMaximumFreeItems();
+        //Will change the value of reward points to what's in shared preferences
+        int rewardsAvailable = getNumberOfMaximumFreeItems(Integer.parseInt(rewardsLabel.getText().toString()));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -339,13 +341,27 @@ public class OrderPage extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
 
                 int rewardsRequested = Integer.parseInt(userInput.getText().toString());
+
+                //This will be fixed when I create shared preferences - change reward points to remaining reward points
+                int pointsRemaining = rewardPoints - (rewardsRequested * getItemRewardPointValue());
+
                 itemQuantity = rewardsRequested;
                 itemPrice = 0.0;
-                quantityAdjuster.setNumber(String.valueOf(itemQuantity));
+                if (isRedeemed) {
+                    //If we already redeemed a reward and we still can redeem more, then we need to add how many items
+                    //that we have already redeemed with the number of items we seek to redeem
+                    itemQuantity = itemQuantity+ Integer.parseInt(quantityAdjuster.getNumber());
+                    quantityAdjuster.setNumber(String.valueOf(itemQuantity));
+                }
+                else {
+                    quantityAdjuster.setNumber(String.valueOf(itemQuantity));
+                }
                 isRedeemed = true;
-                rewardsLabel.setText(String.valueOf(rewardPoints - (rewardsRequested * getItemRewardPointValue())));
+                rewardsLabel.setText(String.valueOf(pointsRemaining));
                 priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
-                redeemButton.setEnabled(false);
+                if (getNumberOfMaximumFreeItems(pointsRemaining) < 1) {
+                    redeemButton.setEnabled(false);
+                }
                 addToCartButton.setEnabled(true);
 
 
@@ -465,7 +481,7 @@ public class OrderPage extends AppCompatActivity {
 
             //Will have to change this so that it edits
             returnToCart = new Intent(this, ShoppingCartPage.class);
-            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
+            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type, isRedeemed);
             returnToCart.putExtra("editedOrder", orderItem);
             returnToCart.putExtra("position", editPosition);
             startActivity(returnToCart);
