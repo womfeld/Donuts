@@ -2,23 +2,26 @@ package com.example.donuts;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 public class OrderPage extends AppCompatActivity {
 
@@ -27,9 +30,11 @@ public class OrderPage extends AppCompatActivity {
 
     private TextView title;
     public TextView priceLabel;
+    public TextView rewardsLabel;
     public ElegantNumberButton quantityAdjuster;
     private ImageView image;
     public Button addToCartButton;
+    public Button redeemButton;
 
 
     ArrayList<CheckBox>checkBoxes;
@@ -48,6 +53,10 @@ public class OrderPage extends AppCompatActivity {
     //Item type
     private String type;
 
+    //Boolean to determine whether user has used reward points for this specific order
+    public boolean isRedeemed;
+    public int redeemedQuantity;
+
     //All the values we will add to the Order object orderItem
     private String itemName;
     public int itemQuantity;
@@ -58,6 +67,10 @@ public class OrderPage extends AppCompatActivity {
     //If an item is being edited, we need to save the position of that item
     private int editPosition;
 
+
+    ///////CHANGE LATER
+    private int rewardPoints = 14;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +78,11 @@ public class OrderPage extends AppCompatActivity {
 
         //Initialize shared preferences object myPref
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+
+        redeemButton = findViewById(R.id.redeemButton);
+        rewardsLabel = findViewById(R.id.rewardPointsLabel);
+        rewardsLabel.setText(String.valueOf(rewardPoints));
+
 
         //Set the checkboxes so we can configure them properly, and then put them into an array
         checkBoxes = new ArrayList<>();
@@ -110,6 +128,7 @@ public class OrderPage extends AppCompatActivity {
             addToCartButton.setText("ADD TO CART");
 
         }
+        //CHECK IF REDEEMED
         else if (intent.hasExtra("orderToEdit") && intent.hasExtra("position")) {
 
             Order o = (Order) intent.getSerializableExtra("orderToEdit");
@@ -172,26 +191,59 @@ public class OrderPage extends AppCompatActivity {
 
 
 
+        //Check to see if user is eligible for reward
+        if (getNumberOfMaximumFreeItems() >= 1) {
+            redeemButton.setEnabled(true);
+        }
+
 
 
         //Adjusts the price label accordingly as the quantity label is adjusted
         quantityAdjuster.setOnClickListener((ElegantNumberButton.OnClickListener) v -> {
+
             String input = quantityAdjuster.getNumber();
-            itemQuantity = Integer.parseInt(input);
 
-            //Set the price of the menu item
-            //I'm just saying the price of a donit is $1.50 for now (will change later)
-            itemPrice = 1.5 * itemQuantity;
-            //String formattedString = "$" + String.format(Locale.US, "%.2f", itemPrice);
-            priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
+            if (!isRedeemed) {
+                itemPrice = 0;
+                itemQuantity = Integer.parseInt(input);
 
-            addToCartButton.setEnabled(true);
+                //Set the price of the menu item
+                //I'm just saying the price of a donit is $1.50 for now (will change later)
+
+                double pricePerItem;
+
+
+                switch (type) {
+                    case "Donut":
+                        pricePerItem = 1.5;
+                        break;
+                    case "Beverage":
+                        pricePerItem = 2.0;
+                        break;
+                    case "Bagel":
+                        pricePerItem = 1.0;
+                        break;
+                    default:
+                        //Don't need this
+                        pricePerItem = 1;
+                }
+
+
+                itemPrice = pricePerItem * itemQuantity;
+                //String formattedString = "$" + String.format(Locale.US, "%.2f", itemPrice);
+                priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
+
+                addToCartButton.setEnabled(true);
+            }
+            else {
+                quantityAdjuster.setNumber(String.valueOf(itemQuantity));
+
+            }
         });
 
-
-
-
     }
+
+
 
     private void setCheckBoxNames(String type) {
         //We need to set checkbox text and visibility based on the type of menu item being ordered
@@ -205,13 +257,160 @@ public class OrderPage extends AppCompatActivity {
                 checkBoxFour.setText("Cream");
                 break;
             case "Bagel":
-                checkBoxOne.setText("By the Dozen");
+                checkBoxOne.setText("Jelly");
                 checkBoxTwo.setText("Cream Cheese");
                 checkBoxThree.setText("Cut in Half");
                 checkBoxFour.setText("Buttered");
             default:
                 ;
         }
+    }
+
+
+    //Alert dialog asking how many items user wishes to redeem (text edit that gives note of the max they can redeem)
+
+    //Find out how many free instances of single item they can POTENTIALLY get based on their points
+    public int getNumberOfMaximumFreeItems() {
+
+        //5 bagel
+        //8 donut
+        //11 drink
+
+        int remainingPoints = rewardPoints;
+        int rewardsAvailable = 0;
+
+
+        int rewardPointCost = getItemRewardPointValue();
+
+        while(remainingPoints >= rewardPointCost) {
+            remainingPoints = remainingPoints - rewardPointCost;
+            rewardsAvailable = rewardsAvailable + 1;
+        }
+
+        return rewardsAvailable;
+
+    }
+
+    private int getItemRewardPointValue() {
+        int rewardPointCost;
+        switch (type) {
+            case "Donut":
+                rewardPointCost = 8;
+                break;
+            case "Beverage":
+                rewardPointCost = 11;
+                break;
+
+            case "Bagel":
+                rewardPointCost = 5;
+                break;
+            default:
+                //Won't happen
+                rewardPointCost = 0;
+        }
+        return rewardPointCost;
+    }
+
+
+    public void redeemRewardClicked(View v) {
+
+        int rewardsAvailable = getNumberOfMaximumFreeItems();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        String prompt = "Enter Number of " + itemName + "'s to Redeem:";
+
+        final View customLayout = getLayoutInflater().inflate(R.layout.reward_alert_dialog, null);
+        builder.setView(customLayout);
+
+        TextView title = customLayout.findViewById(R.id.alertPromptLabel);
+        EditText userInput = customLayout.findViewById(R.id.alertRewardsInput);
+        TextView rewardsAvailableLabel = customLayout.findViewById(R.id.alertRewardsAvailableLabel);
+        TextView warningLabel = customLayout.findViewById(R.id.alertWarningLabel);
+
+        title.setText(prompt);
+        //Change later
+        rewardsAvailableLabel.setText("Available: " + rewardsAvailable);
+        warningLabel.setVisibility(View.INVISIBLE);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                int rewardsRequested = Integer.parseInt(userInput.getText().toString());
+                itemQuantity = rewardsRequested;
+                itemPrice = 0.0;
+                quantityAdjuster.setNumber(String.valueOf(itemQuantity));
+                isRedeemed = true;
+                rewardsLabel.setText(String.valueOf(rewardPoints - (rewardsRequested * getItemRewardPointValue())));
+                priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
+                redeemButton.setEnabled(false);
+                addToCartButton.setEnabled(true);
+
+
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        setTextChangeListener(rewardsAvailable, userInput, warningLabel, dialog);
+
+    }
+
+
+    private void setTextChangeListener(int rewardsAvailable, EditText userInput, TextView warningLabel, AlertDialog dialog) {
+        //Only enable ok button when input is below rewards available
+        userInput.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                warningLabel.setVisibility(View.INVISIBLE);
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+
+                if (s.length() < 1) {
+                    warningLabel.setVisibility(View.INVISIBLE);
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+                }
+                else {
+
+                    /////////ADD INVENTORY CHECK//////////////
+
+                    int rewardsRequested = Integer.parseInt(userInput.getText().toString());
+
+                    if (rewardsRequested > rewardsAvailable || rewardsRequested == 0) {
+                        warningLabel.setVisibility(View.VISIBLE);
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    }
+                    else {
+                        warningLabel.setVisibility(View.INVISIBLE);
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
+                }
+            }
+        });
     }
 
 

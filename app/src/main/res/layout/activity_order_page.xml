@@ -236,6 +236,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="81dp"
         android:layout_marginLeft="81dp"
+        android:enabled="false"
+        android:onClick="redeemRewardClicked"
         android:text="REDEEM"
         app:layout_constraintBaseline_toBaselineOf="@+id/availablePointsLabel"
         app:layout_constraintStart_toEndOf="@+id/rewardPointsLabel" />

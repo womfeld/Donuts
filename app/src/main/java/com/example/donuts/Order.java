@@ -22,6 +22,7 @@ public class Order implements Serializable {
     private double itemPrice;
     private int image;
     private String type;
+    private boolean isRedeemed;
 
     public Order (String itemName, ArrayList<String> items, int quantity, double itemPrice, int img, String type) {
         this.itemName = itemName;
@@ -32,6 +33,19 @@ public class Order implements Serializable {
         this.itemPrice = itemPrice;
         this.image = img;
         this.type = type;
+        this.isRedeemed = false;
+    }
+
+    public Order (String itemName, ArrayList<String> items, int quantity, double itemPrice, int img, String type, boolean isRedeemed) {
+        this.itemName = itemName;
+        //Initialize customItems
+        customItems = new ArrayList<>();
+        setCustomItems(items);
+        this.quantity = quantity;
+        this.itemPrice = itemPrice;
+        this.image = img;
+        this.type = type;
+        this.isRedeemed = isRedeemed;
     }
 
     public Order() {
@@ -64,6 +78,8 @@ public class Order implements Serializable {
 
     public String getType() { return type; }
 
+    public boolean getIsReedemed(boolean b) {return isRedeemed; }
+
     public void setQuantity(int q) {
         this.quantity = q;
     }
@@ -83,6 +99,8 @@ public class Order implements Serializable {
     }
 
     public void setType(String t) { this.type = t; }
+
+    public void setIsReedemed(boolean b) {this.isRedeemed = b; }
 
 
     @NonNull
