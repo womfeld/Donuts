@@ -37,7 +37,6 @@ public class OrderPage extends AppCompatActivity {
     public CheckBox checkBoxTwo;
     public CheckBox checkBoxThree;
     public CheckBox checkBoxFour;
-    public CheckBox checkBoxFive;
 
 
 
@@ -77,8 +76,6 @@ public class OrderPage extends AppCompatActivity {
         checkBoxes.add(checkBoxThree);
         checkBoxFour = findViewById(R.id.checkBox4);
         checkBoxes.add(checkBoxFour);
-        checkBoxFive = findViewById(R.id.checkBox5);
-        checkBoxes.add(checkBoxFive);
 
 
         //Intialize the addToCart Button
@@ -108,6 +105,8 @@ public class OrderPage extends AppCompatActivity {
 
             type = intent.getStringExtra("type");
 
+            setCheckBoxNames(type);
+
             addToCartButton.setText("ADD TO CART");
 
         }
@@ -118,6 +117,9 @@ public class OrderPage extends AppCompatActivity {
 
             itemName = o.getName();
             itemImage = o.getImage();
+            type = o.getType();
+
+            setCheckBoxNames(type);
 
             HashSet<String>h = new HashSet<>();
             h.addAll(o.getCustomItems());
@@ -147,29 +149,6 @@ public class OrderPage extends AppCompatActivity {
         //Change quantityAdjuster to increment by 12s.  Do this inside the onclick listener.
         //Pass the text on the quantity adjuster to a method that converts a string to an int and
         //increments that int by 12.  Then, set text of quantityAdjuster to what the method returns
-
-        //We need to set checkbox text and visibility based on the type of menu item being ordered
-        switch (type) {
-            case "Donut":
-                checkBoxFive.setVisibility(View.INVISIBLE);
-                break;
-            case "Beverage":
-                checkBoxOne.setText("Milk");
-                checkBoxTwo.setText("Sugar");
-                checkBoxThree.setText("Decaf");
-                checkBoxFour.setText("Cream");
-                checkBoxFive.setVisibility(View.INVISIBLE);
-                break;
-            case "Bagel":
-                checkBoxOne.setText("By the Dozen");
-                checkBoxTwo.setText("Cream Cheese");
-                checkBoxThree.setVisibility(View.INVISIBLE);
-                checkBoxFour.setVisibility(View.INVISIBLE);
-                checkBoxFive.setVisibility(View.INVISIBLE);
-            default:
-                ;
-
-        }
 
 
 
@@ -214,6 +193,26 @@ public class OrderPage extends AppCompatActivity {
 
     }
 
+    private void setCheckBoxNames(String type) {
+        //We need to set checkbox text and visibility based on the type of menu item being ordered
+        switch (type) {
+            case "Donut":
+                break;
+            case "Beverage":
+                checkBoxOne.setText("Milk");
+                checkBoxTwo.setText("Sugar");
+                checkBoxThree.setText("Decaf");
+                checkBoxFour.setText("Cream");
+                break;
+            case "Bagel":
+                checkBoxOne.setText("By the Dozen");
+                checkBoxTwo.setText("Cream Cheese");
+                checkBoxThree.setText("Cut in Half");
+                checkBoxFour.setText("Buttered");
+            default:
+                ;
+        }
+    }
 
 
     public void addToCartClicked(View v) {
@@ -257,7 +256,7 @@ public class OrderPage extends AppCompatActivity {
 
             //Fall back on
             returnToMain = new Intent(this, MainActivity.class);
-            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
+            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
             returnToMain.putExtra("order", orderItem);
             startActivity(returnToMain);
 
@@ -267,7 +266,7 @@ public class OrderPage extends AppCompatActivity {
 
             //Will have to change this so that it edits
             returnToCart = new Intent(this, ShoppingCartPage.class);
-            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
+            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
             returnToCart.putExtra("editedOrder", orderItem);
             returnToCart.putExtra("position", editPosition);
             startActivity(returnToCart);

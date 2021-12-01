@@ -265,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 int quantity = jObject.getInt("quantity");
                 double itemPrice = jObject.getDouble("itemPrice");
                 int img = jObject.getInt("image");
+                String type = jObject.getString("type");
 
                 JSONArray customItemsJSON = jObject.getJSONArray("customItems");
                 ArrayList<String> items = new ArrayList<>();
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    orders.add(new Order(itemName, items, quantity, itemPrice, img));
+                    orders.add(new Order(itemName, items, quantity, itemPrice, img, type));
                 }
             }
 

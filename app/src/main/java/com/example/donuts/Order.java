@@ -21,8 +21,9 @@ public class Order implements Serializable {
     private int quantity;
     private double itemPrice;
     private int image;
+    private String type;
 
-    public Order (String itemName, ArrayList<String> items, int quantity, double itemPrice, int img) {
+    public Order (String itemName, ArrayList<String> items, int quantity, double itemPrice, int img, String type) {
         this.itemName = itemName;
         //Initialize customItems
         customItems = new ArrayList<>();
@@ -30,6 +31,7 @@ public class Order implements Serializable {
         this.quantity = quantity;
         this.itemPrice = itemPrice;
         this.image = img;
+        this.type = type;
     }
 
     public Order() {
@@ -60,6 +62,8 @@ public class Order implements Serializable {
         return image;
     }
 
+    public String getType() { return type; }
+
     public void setQuantity(int q) {
         this.quantity = q;
     }
@@ -78,6 +82,8 @@ public class Order implements Serializable {
         this.image = img;
     }
 
+    public void setType(String t) { this.type = t; }
+
 
     @NonNull
     public String toString() {
@@ -93,6 +99,7 @@ public class Order implements Serializable {
             jsonWriter.name("quantity").value(getQuantity());
             jsonWriter.name("itemPrice").value(getItemPrice());
             jsonWriter.name("image").value(getImage());
+            jsonWriter.name("type").value(getType());
 
             //Begins array within object for custom items
             jsonWriter.name("customItems").beginArray();

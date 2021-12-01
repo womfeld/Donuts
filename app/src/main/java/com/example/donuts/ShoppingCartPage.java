@@ -135,9 +135,13 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             revisedOrder = (Order) intent.getSerializableExtra("editedOrder");
             position = intent.getIntExtra("position", 0);
 
-            //CHANGE LATER!!!/////////////////This will cause problems as it is
-            ordersList.clear();
-            ordersList.add(revisedOrder);
+            //Need to load the current cart, revise it to account for edited item, then save the changes
+            ordersList.addAll(loadFile());
+            ordersList.remove(position);
+            ordersList.add(position, revisedOrder);
+            saveCart();
+            cAdapter.notifyDataSetChanged();
+
 
 
         }
@@ -147,13 +151,29 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
         //Set the total price label
 
-        for (Order o : ordersList) {
-            totalPrice = totalPrice + o.getItemPrice();
-        }
-        priceLabel.setText("$"+String.format(Locale.US, "%.2f",totalPrice));
+        displayTotalPrice();
 
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onResume() {
+        ordersList.clear();
+        ordersList.addAll(loadFile());
+        super.onResume();
+
+    }
+
+
+    private void displayTotalPrice() {
+        double n = 0;
+        for (Order o : ordersList) {
+            n = n + o.getItemPrice();
+        }
+        totalPrice = n;
+        priceLabel.setText("$"+String.format(Locale.US, "%.2f",totalPrice));
+    }
 
 
     @Override
@@ -210,6 +230,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
                 int quantity = jObject.getInt("quantity");
                 double itemPrice = jObject.getDouble("itemPrice");
                 int img = jObject.getInt("image");
+                String type = jObject.getString("type");
 
                 JSONArray customItemsJSON = jObject.getJSONArray("customItems");
                 ArrayList<String> items = new ArrayList<>();
@@ -218,7 +239,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    orders.add(new Order(itemName, items, quantity, itemPrice, img));
+                    orders.add(new Order(itemName, items, quantity, itemPrice, img, type));
                 }
             }
 
@@ -294,6 +315,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             ordersList.remove(o);
             saveCart();
             cAdapter.notifyDataSetChanged();
+            displayTotalPrice();
 
         });
         builder.setNegativeButton("CANCEL", (dialogInterface, i) -> {
