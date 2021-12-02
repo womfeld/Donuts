@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private User user;
 
 
 
@@ -62,6 +63,26 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Initialize shared preferences object myPref
+
+
+
+
+        Intent intent = getIntent();
+
+        if (intent.hasExtra("registeredUser") || intent.hasExtra("newUser")) {
+
+            if (intent.hasExtra("registeredUser")) {
+                user = (User) intent.getSerializableExtra("registeredUser");
+            }
+            else {
+                user = (User) intent.getSerializableExtra("newUser");
+            }
+
+            //Need to clear json file when user logins in
+            clearCart();
+
+        }
+
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
         //Initialize editor for myPref
         SharedPreferences.Editor myPrefEditor = myPrefs.edit();
@@ -69,8 +90,11 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
 
 
+        //When logging in or creating an account we have to clear the JSON file
 
-        Intent intent = getIntent();
+
+
+
 
         //This section of code receives the intent with the menu (titles and images) and saves
         //the menu titles into menuList and the menu images into menuImages
@@ -153,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             Intent goToCart = new Intent(this, ShoppingCartPage.class);
             //Fall back on
             goToCart.putExtra("orders", userOrders);
+            goToCart.putExtra("userInfo", user);
             startActivity(goToCart);
 
             //Fall back on for shared preferences
@@ -212,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        i.putExtra("userInfo", user);
         startActivity(i);
 
     }
@@ -224,6 +250,30 @@ public class MainActivity extends AppCompatActivity {
         //If deciding to move forward with this app, will be more efficient to use Broadcast and Receive
         userOrders.addAll(loadFile());
         userOrders.add(order);
+
+
+        try {
+            FileOutputStream fos = getApplicationContext().
+                    openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
+
+            PrintWriter printWriter = new PrintWriter(fos);
+            printWriter.print(userOrders);
+            printWriter.close();
+            fos.close();
+
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void clearCart() {
+
+
+        //This creates the JSON file to put the name and description contents in
+        //If deciding to move forward with this app, will be more efficient to use Broadcast and Receive
+        userOrders.clear();
 
 
         try {

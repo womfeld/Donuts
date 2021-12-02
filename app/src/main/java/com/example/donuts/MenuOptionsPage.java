@@ -21,6 +21,7 @@ public class MenuOptionsPage extends AppCompatActivity implements View.OnClickLi
     private String[] menuList;
     private int[] menuImagesList;
     private String type;
+    private User user;
 
 
     @Override
@@ -34,11 +35,12 @@ public class MenuOptionsPage extends AppCompatActivity implements View.OnClickLi
 
         //This section of code receives the intent with the menu (titles and images) and saves
         //the menu titles into menuList and the menu images into menuImages
-        if (intent.hasExtra("menu") && intent.hasExtra("images") && intent.hasExtra("type")) {
+        if (intent.hasExtra("menu") && intent.hasExtra("images") && intent.hasExtra("type") && intent.hasExtra("userInfo")) {
 
             menuList = intent.getStringArrayExtra("menu");
             menuImagesList = intent.getIntArrayExtra("images");
             type = intent.getStringExtra("type");
+            user = (User) intent.getSerializableExtra("userInfo");
 
         }
 

@@ -25,7 +25,6 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
     private ArrayList<String> menuItemNames;
     public ArrayList<Integer>menuItemQuantities;
 
-    private HashMap<String, Integer> map;
 
 
 
@@ -83,6 +82,7 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
 
     public void updateInventoryClicked(View v) {
 
+        HashMap<String, Integer> map = new HashMap<>();
 
         System.out.println(updatedPositions);
 
@@ -92,11 +92,13 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
             int updatedAmount = menuItemQuantities.get(i);
             String itemName = menuItemNames.get(i);
 
+            map.put(itemName, updatedAmount);
+
 
             //Do an SQL query hereto update inventory in database
-
-
         }
+
+
     }
 
     @Override

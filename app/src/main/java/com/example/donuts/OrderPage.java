@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -49,6 +50,9 @@ public class OrderPage extends AppCompatActivity {
     private SharedPreferences myPrefs;
 
 
+    public User user;
+
+
 
     //Item type
     private String type;
@@ -69,7 +73,10 @@ public class OrderPage extends AppCompatActivity {
 
 
     ///////CHANGE LATER
-    private int rewardPoints = 14;
+    public int rewardPoints;
+
+
+    public StoreDatabase storeDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +88,9 @@ public class OrderPage extends AppCompatActivity {
 
         redeemButton = findViewById(R.id.redeemButton);
         rewardsLabel = findViewById(R.id.rewardPointsLabel);
-        rewardsLabel.setText(String.valueOf(rewardPoints));
+
+        storeDatabase = new StoreDatabase(this);
+
 
 
         //Set the checkboxes so we can configure them properly, and then put them into an array
@@ -108,10 +117,18 @@ public class OrderPage extends AppCompatActivity {
         quantityAdjuster = findViewById(R.id.counterButton);
 
 
-        //Get intent - the intent will either be a user choosing from the menu
-        //or a user editing their order from the cart
-
         Intent intent = getIntent();
+
+        if (intent.hasExtra("userInfo")) {
+            user = (User) intent.getSerializableExtra("newUser");
+
+        }
+
+
+        rewardPoints = myPrefs.getInt("remainingRewardPoints", 0);
+
+
+        rewardsLabel.setText(String.valueOf(rewardPoints));
 
         //This will be the intent when the user chooses from the menu
         if (intent.hasExtra("name") && intent.hasExtra("image") && intent.hasExtra("type")) {
@@ -342,8 +359,18 @@ public class OrderPage extends AppCompatActivity {
 
                 int rewardsRequested = Integer.parseInt(userInput.getText().toString());
 
+                //Initialize editor for myPref
+                SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+                //Initialize gson object so it's possible to save objects in sharedPreferences object
+                Gson gson = new Gson();
+
+                int pointsRemaining = myPrefs.getInt("remainingRewardPoints", 0);
+
                 //This will be fixed when I create shared preferences - change reward points to remaining reward points
-                int pointsRemaining = rewardPoints - (rewardsRequested * getItemRewardPointValue());
+                int updatedPointsRemaining = pointsRemaining - (rewardsRequested * getItemRewardPointValue());
+
+                myPrefEditor.putInt("remainingRewardPoints", updatedPointsRemaining);
+                myPrefEditor.commit();
 
                 itemQuantity = rewardsRequested;
                 itemPrice = 0.0;
@@ -357,9 +384,9 @@ public class OrderPage extends AppCompatActivity {
                     quantityAdjuster.setNumber(String.valueOf(itemQuantity));
                 }
                 isRedeemed = true;
-                rewardsLabel.setText(String.valueOf(pointsRemaining));
+                rewardsLabel.setText(String.valueOf(updatedPointsRemaining));
                 priceLabel.setText("$" + String.format(Locale.US, "%.2f", itemPrice));
-                if (getNumberOfMaximumFreeItems(pointsRemaining) < 1) {
+                if (getNumberOfMaximumFreeItems(updatedPointsRemaining) < 1) {
                     redeemButton.setEnabled(false);
                 }
                 addToCartButton.setEnabled(true);
@@ -473,6 +500,7 @@ public class OrderPage extends AppCompatActivity {
             returnToMain = new Intent(this, MainActivity.class);
             orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
             returnToMain.putExtra("order", orderItem);
+            returnToMain.putExtra("registeredUser", user);
             startActivity(returnToMain);
 
         }
@@ -484,6 +512,7 @@ public class OrderPage extends AppCompatActivity {
             orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type, isRedeemed);
             returnToCart.putExtra("editedOrder", orderItem);
             returnToCart.putExtra("position", editPosition);
+            returnToCart.putExtra("userInfo", user);
             startActivity(returnToCart);
 
 

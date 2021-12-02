@@ -55,6 +55,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
     //Shared preferences object
     private SharedPreferences myPrefs;
 
+    private User user;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -83,6 +84,10 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
         recyclerView.setAdapter(cAdapter);
 
         Intent intent = getIntent();
+
+        if (intent.hasExtra("userInfo")) {
+            user = (User) intent.getSerializableExtra("userInfo");
+        }
 
         if (intent.hasExtra("orders")) {
 
@@ -191,11 +196,17 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             startActivity(i);
             return true;
         } else if (item.getItemId() == R.id.clear_icon) {
-            ordersList.clear();;
+            ordersList.clear();
             saveCart();
             cAdapter.notifyDataSetChanged();
             totalPrice = 0;
             priceLabel.setText("$"+String.format(Locale.US, "%.2f",totalPrice));
+
+            //Need to reset the reward points
+            myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+            SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+            myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
+            myPrefEditor.commit();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
