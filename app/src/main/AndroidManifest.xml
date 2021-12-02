@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Donuts"
         tools:replace="android:theme">
-        <activity android:name=".InventoryUpdatePage"></activity>
+        <activity android:name=".OrderCompletePage"></activity>
+        <activity android:name=".InventoryUpdatePage" />
         <activity android:name=".MainActivity" />
         <activity android:name=".CreateAccount" />
         <activity android:name=".CheckoutPage" />

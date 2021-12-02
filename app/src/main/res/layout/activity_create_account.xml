@@ -43,7 +43,7 @@
             android:hint="Last Name" />
 
         <EditText
-            android:id="@+id/emailTextField"
+            android:id="@+id/addressTextField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

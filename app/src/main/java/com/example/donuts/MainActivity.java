@@ -83,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+
+        if (intent.hasExtra("userInfo")) {
+            user = (User) intent.getSerializableExtra("userInfo");
+        }
+
+
+
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
         //Initialize editor for myPref
         SharedPreferences.Editor myPrefEditor = myPrefs.edit();
@@ -164,11 +171,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
 
+
+
         // Now check for menu items
         if (item.getItemId() == R.id.goToHomePage) {
             Toast.makeText(this, "Home Page", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (item.getItemId() == R.id.goToManagerPage) {
+        } else if (item.getItemId() == R.id.goToUserPortal) {
             Intent i = new Intent(this, UserPortal.class);
             startActivity(i);
             return true;
@@ -185,11 +194,8 @@ public class MainActivity extends AppCompatActivity {
 //            startActivity(goToCart);
 
             return true;
-        } else if (item.getItemId() == R.id.goToCreateAccount) {
-            Intent goToCreateAcc = new Intent(this, CreateAccount.class);
-            startActivity(goToCreateAcc);
-            return true;
-        } else {
+        }
+        else {
             return super.onOptionsItemSelected(item);
         }
 
@@ -340,6 +346,8 @@ public class MainActivity extends AppCompatActivity {
 
         return orders;
     }
+
+
 
 
 

@@ -33,6 +33,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class ShoppingCartPage extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -52,10 +53,15 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
     private int position;
 
 
+    StoreDatabase storeDatabase;
+
     //Shared preferences object
     private SharedPreferences myPrefs;
 
     private User user;
+
+
+    private HashMap<String, Integer> currentInventory;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -82,6 +88,8 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
         cAdapter = new CartAdapter(this, ordersList);
         recyclerView.setAdapter(cAdapter);
+
+        storeDatabase = new StoreDatabase(this);
 
         Intent intent = getIntent();
 
@@ -305,8 +313,20 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
     public void checkOutClicked (View v) {
 
+        currentInventory = storeDatabase.loadInventory();
+
+        HashMap<String, Integer> updatedInventoryItems = new HashMap<>();
+
+        for (Order o: ordersList) {
+            int currentItemCount = currentInventory.get(o.getName());
+            int updatedItemCount = currentItemCount - o.getQuantity();
+            updatedInventoryItems.put(o.getName(), updatedItemCount);
+        }
+
         Intent goToCheckout = new Intent(this, CheckoutPage.class);
         goToCheckout.putExtra("totalPrice", totalPrice);
+        goToCheckout.putExtra("userInfo", user);
+        goToCheckout.putExtra("updatedInventoryItems", updatedInventoryItems);
         startActivity(goToCheckout);
     }
 
@@ -338,5 +358,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
         return false;
     }
+
+
 
 }

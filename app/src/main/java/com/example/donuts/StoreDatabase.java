@@ -201,6 +201,18 @@ public class StoreDatabase extends SQLiteOpenHelper {
     }
 
 
+
+    public void addCustomer(String userName, String cardNumber, int cvv, String address) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, userName);
+        values.put(COLUMN_CUSTOMER_CREDIT_CARD_NUM, cardNumber);
+        values.put(COLUMN_CUSTOMER_CREDIT_CARD_CVV, cvv);
+        values.put(COLUMN_CUSTOMER_MAILING_ADDRESS, address);
+        database.insert(CUSTOMERS_TABLE, null, values);
+
+    }
+
+
     public void addEmployee(String fn, String ln, String job, String salary) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_EMPLOYEE_FIRST_NAME, fn);
@@ -208,6 +220,29 @@ public class StoreDatabase extends SQLiteOpenHelper {
         values.put(COLUMN_EMPLOYEE_JOB, job);
         values.put(COLUMN_EMPLOYEE_SALARY, salary);
         database.insert(EMPLOYEES_TABLE, null, values);
+
+    }
+
+    public void addItemToInventory(String item, int qty, double price) {
+
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_INVENTORY_NAME, item);
+        values.put(COLUMN_INVENTORY_QUANTITY, qty);
+        values.put(COLUMN_INVENTORY_PRICE, price);
+
+        database.insert(INVENTORY_TABLE, null, values);
+
+
+
+    }
+
+
+    public void addOrder(Double total, String userName) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ORDER_SPENT, total);
+        values.put(COLUMN_USERNAME, userName);
+        database.insert(ORDERS_TABLE, null, values);
 
     }
 
@@ -242,6 +277,8 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
         return inventory;
     }
+
+
 
 
 

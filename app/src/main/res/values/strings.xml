@@ -4,8 +4,9 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="go_to_hp">HOME</string>
-    <string name="go_to_mp">MANAGER PAGE</string>
+    <string name="go_to_mp">MY PROFILE</string>
     <string name="my_cart">MY CART</string>
     <string name="montrose_d_d"><![CDATA[Montrose D&D]]></string>
     <string name="create_an_account">CREATE AN ACCOUNT</string>
+    <string name="ManagerPortal">MANAGER PORTAL</string>
 </resources>

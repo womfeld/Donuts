@@ -50,6 +50,17 @@ public class LoginPage extends AppCompatActivity {
         }
 
 
+        String[] tempArray = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter",
+                "Coffee", "Iced Coffee", "Latte", "Macchiato", "Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
+        int[] qtys = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+
+        double[] prices = {1.5, 1.5, 1.5, 1.5, 2, 2, 2, 2, 1, 1, 1, 1};
+
+        for (int i=0; i < 12; i++) {
+            storeDatabase.addItemToInventory(tempArray[i], qtys[i], prices[i]);
+        }
+
+
 
 
         userNameInput = findViewById(R.id.userNameTextField);

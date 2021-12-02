@@ -120,7 +120,7 @@ public class OrderPage extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.hasExtra("userInfo")) {
-            user = (User) intent.getSerializableExtra("newUser");
+            user = (User) intent.getSerializableExtra("userInfo");
 
         }
 
@@ -500,7 +500,7 @@ public class OrderPage extends AppCompatActivity {
             returnToMain = new Intent(this, MainActivity.class);
             orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
             returnToMain.putExtra("order", orderItem);
-            returnToMain.putExtra("registeredUser", user);
+            returnToMain.putExtra("userInfo", user);
             startActivity(returnToMain);
 
         }

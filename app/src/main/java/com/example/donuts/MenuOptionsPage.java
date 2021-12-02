@@ -67,7 +67,7 @@ public class MenuOptionsPage extends AppCompatActivity implements View.OnClickLi
             Intent home = new Intent(this, MainActivity.class);
             startActivity(home);
             return true;
-        } else if (item.getItemId() == R.id.goToManagerPage) {
+        } else if (item.getItemId() == R.id.goToUserPortal) {
             Intent intent = new Intent(this, UserPortal.class);
             startActivity(intent);
             return true;
@@ -89,6 +89,7 @@ public class MenuOptionsPage extends AppCompatActivity implements View.OnClickLi
         int image = menuImagesList[pos];
 
         Intent i = new Intent(this, OrderPage.class);
+        i.putExtra("userInfo", user);
         i.putExtra("name", itemTitle);
         i.putExtra("image", image);
         i.putExtra("type", type);

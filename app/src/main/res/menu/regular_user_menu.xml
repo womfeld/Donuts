@@ -10,7 +10,6 @@
         android:title="@string/go_to_mp" />
     <item android:title="@string/my_cart"
         android:id="@+id/goToShoppingCart" />
-    <item android:title="@string/ManagerPortal"
-        android:id="@+id/goToCreateAccount"/>
+
 
 </menu>
