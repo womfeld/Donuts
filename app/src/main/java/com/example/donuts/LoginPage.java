@@ -1,13 +1,13 @@
 package com.example.donuts;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class LoginPage extends AppCompatActivity {
 
@@ -29,12 +33,15 @@ public class LoginPage extends AppCompatActivity {
     public SharedPreferences myPrefs;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-        this.deleteDatabase("MontroseDonutsDeliDB");
+        clearCart();
+
+        //this.deleteDatabase("MontroseDonutsDeliDB");
 
 
         storeDatabase = new StoreDatabase(this);
@@ -42,23 +49,19 @@ public class LoginPage extends AppCompatActivity {
 
 
         //Adds the manager
-        try {
-            storeDatabase.addUser(new User("Manager", "Will", "manager", "asdf3", "No", 0, "Manager"));
-        }
-        catch(Exception e) {
-
-        }
+         //storeDatabase.addUser(new User("Manager", "Will", "manager", "asdf3", "No", 0, "Manager"));
 
 
-        String[] tempArray = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter",
-                "Coffee", "Iced Coffee", "Latte", "Macchiato", "Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
-        int[] qtys = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
 
-        double[] prices = {1.5, 1.5, 1.5, 1.5, 2, 2, 2, 2, 1, 1, 1, 1};
-
-        for (int i=0; i < 12; i++) {
-            storeDatabase.addItemToInventory(tempArray[i], qtys[i], prices[i]);
-        }
+//        String[] tempArray = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter",
+//                "Coffee", "Iced Coffee", "Latte", "Macchiato", "Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
+//        int[] qtys = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+//
+//        double[] prices = {1.5, 1.5, 1.5, 1.5, 2, 2, 2, 2, 1, 1, 1, 1};
+//
+//        for (int i=0; i < 12; i++) {
+//            storeDatabase.addItemToInventory(tempArray[i], qtys[i], prices[i]);
+//        }
 
 
 
@@ -87,20 +90,20 @@ public class LoginPage extends AppCompatActivity {
         else {
 
             try {
-                User user = storeDatabase.loadUser(userNameEntered, passwordEntered, this);
+                User user = storeDatabase.loadUser(userNameEntered, passwordEntered);
 
-                myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
-                //Initialize editor for myPref
-                SharedPreferences.Editor myPrefEditor = myPrefs.edit();
-                //Initialize gson object so it's possible to save objects in sharedPreferences object
-                Gson gson = new Gson();
+                configureUserSharedPreferences(user);
 
-                myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
-                myPrefEditor.commit();
-
-                Intent i = new Intent(this, MainActivity.class);
-                i.putExtra("registeredUser", user);
-                startActivity(i);
+                if (user.getRole().equals("Regular")) {
+                    Intent i = new Intent(this, MainActivity.class);
+                    i.putExtra("registeredUser", user);
+                    startActivity(i);
+                }
+                else {
+                    Intent i = new Intent(this, ManagerPortal.class);
+                    i.putExtra("registeredUser", user);
+                    startActivity(i);
+                }
 
             }
             catch (Exception e) {
@@ -111,7 +114,18 @@ public class LoginPage extends AppCompatActivity {
         }
     }
 
+    private void configureUserSharedPreferences(User user) {
+        myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+        //Initialize editor for myPref
+        SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+        myPrefEditor.clear();
 
+        myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
+        myPrefEditor.putString("currentUserName", user.getUserName());
+        myPrefEditor.putString("currentPassword", user.getPassword());
+        myPrefEditor.putString("userRole", user.getRole());
+        myPrefEditor.commit();
+    }
 
 
     public void signUpButtonClicked(View v) {
@@ -123,9 +137,36 @@ public class LoginPage extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
     protected void onDestroy() {
         storeDatabase.shutDown();
         super.onDestroy();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void clearCart() {
+
+
+        ArrayList<Order> userOrders = new ArrayList<>();
+
+
+        try {
+            FileOutputStream fos = getApplicationContext().
+                    openFileOutput(getString(R.string.file_name), Context.MODE_PRIVATE);
+
+            PrintWriter printWriter = new PrintWriter(fos);
+            printWriter.print(userOrders);
+            printWriter.close();
+            fos.close();
+
+        } catch (Exception e) {
+            e.getStackTrace();
+        }
+
     }
 
 

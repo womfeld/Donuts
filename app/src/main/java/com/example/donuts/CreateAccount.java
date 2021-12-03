@@ -2,11 +2,15 @@ package com.example.donuts;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 public class CreateAccount extends AppCompatActivity {
 
@@ -17,6 +21,8 @@ public class CreateAccount extends AppCompatActivity {
 
     StoreDatabase storeDatabase;
 
+    SharedPreferences myPrefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,9 @@ public class CreateAccount extends AppCompatActivity {
         setTitle("Sign Up");
 
         storeDatabase = new StoreDatabase(this);
+
+
+
 
 
 
@@ -52,6 +61,8 @@ public class CreateAccount extends AppCompatActivity {
             User newUser = new User(firstNameInput.getText().toString(), lastNameInput.getText().toString(),
                     newUserNameInput.getText().toString(), newPassWordInput.getText().toString(), "No", 0, "Regular");
 
+            configureUserSharedPreferences(newUser);
+
             storeDatabase.addUser(newUser);
 
             Intent i = new Intent(this, MainActivity.class);
@@ -66,7 +77,21 @@ public class CreateAccount extends AppCompatActivity {
         }
 
 
+    }
 
+
+    private void configureUserSharedPreferences(User user) {
+        myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+        //Initialize editor for myPref
+        SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+        //Initialize gson object so it's possible to save objects in sharedPreferences object
+        myPrefEditor.clear();
+
+        myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
+        myPrefEditor.putString("currentUserName", user.getUserName());
+        myPrefEditor.putString("currentPassword", user.getPassword());
+        myPrefEditor.putString("userRole", user.getRole());
+        myPrefEditor.commit();
     }
 
     @Override

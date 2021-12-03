@@ -1,6 +1,12 @@
 package com.example.donuts;
 
+import android.util.JsonWriter;
+
+import androidx.annotation.NonNull;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 
 public class User implements Serializable {
 
@@ -109,6 +115,7 @@ public class User implements Serializable {
     private void setRole(String r) {
         this.role = r;
     }
+
 
 
 }

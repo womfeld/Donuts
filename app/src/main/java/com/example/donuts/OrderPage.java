@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.google.gson.Gson;
@@ -75,6 +76,11 @@ public class OrderPage extends AppCompatActivity {
     ///////CHANGE LATER
     public int rewardPoints;
 
+    //Hacky, delete later
+    public Intent whereWeCameFrom;
+
+    private int currentQuantityOfItem;
+
 
     public StoreDatabase storeDatabase;
 
@@ -90,6 +96,8 @@ public class OrderPage extends AppCompatActivity {
         rewardsLabel = findViewById(R.id.rewardPointsLabel);
 
         storeDatabase = new StoreDatabase(this);
+
+
 
 
 
@@ -118,6 +126,8 @@ public class OrderPage extends AppCompatActivity {
 
 
         Intent intent = getIntent();
+
+        whereWeCameFrom = intent;
 
         if (intent.hasExtra("userInfo")) {
             user = (User) intent.getSerializableExtra("userInfo");
@@ -189,6 +199,7 @@ public class OrderPage extends AppCompatActivity {
 
 
 
+        currentQuantityOfItem = storeDatabase.getInventoryItemQuantity(itemName);
 
         //Initialize customItems
         customItems = new ArrayList<>();
@@ -339,11 +350,11 @@ public class OrderPage extends AppCompatActivity {
 
         String prompt = "Enter Number of " + itemName + "'s to Redeem:";
 
-        final View customLayout = getLayoutInflater().inflate(R.layout.reward_alert_dialog, null);
+        final View customLayout = getLayoutInflater().inflate(R.layout.rewards_alert_dialog, null);
         builder.setView(customLayout);
 
-        TextView title = customLayout.findViewById(R.id.alertPromptLabel);
-        EditText userInput = customLayout.findViewById(R.id.alertRewardsInput);
+        TextView title = customLayout.findViewById(R.id.reviewDialogTitle);
+        EditText userInput = customLayout.findViewById(R.id.EditText1);
         TextView rewardsAvailableLabel = customLayout.findViewById(R.id.alertRewardsAvailableLabel);
         TextView warningLabel = customLayout.findViewById(R.id.alertWarningLabel);
 
@@ -366,7 +377,7 @@ public class OrderPage extends AppCompatActivity {
 
                 int pointsRemaining = myPrefs.getInt("remainingRewardPoints", 0);
 
-                //This will be fixed when I create shared preferences - change reward points to remaining reward points
+
                 int updatedPointsRemaining = pointsRemaining - (rewardsRequested * getItemRewardPointValue());
 
                 myPrefEditor.putInt("remainingRewardPoints", updatedPointsRemaining);
@@ -445,6 +456,13 @@ public class OrderPage extends AppCompatActivity {
 
                     if (rewardsRequested > rewardsAvailable || rewardsRequested == 0) {
                         warningLabel.setVisibility(View.VISIBLE);
+                        warningLabel.setText("Error: Not enough reward points available.");
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    }
+                    else if (rewardsRequested > currentQuantityOfItem) {
+                        String message = "Error: Only " + currentQuantityOfItem + " " + itemName + "'s left in stock";
+                        warningLabel.setText(message);
+                        warningLabel.setVisibility(View.VISIBLE);
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                     }
                     else {
@@ -462,6 +480,7 @@ public class OrderPage extends AppCompatActivity {
         Intent returnToMain;
         Intent returnToCart;
 
+
         //In this code, we will first clear the customItems array if we received the order (in this case, if we edit
         //an order from the shopping cart page) from the shopping cart page
         customItems.clear();
@@ -472,58 +491,60 @@ public class OrderPage extends AppCompatActivity {
             }
         }
 
-        if (addToCartButton.getText().toString().equals("ADD TO CART")) {
-
-            //Shared preference code
-            //Fall back on
-
-            //Initialize editor for myPref
-//            SharedPreferences.Editor myPrefEditor = myPrefs.edit();
-//            //Initialize gson object so it's possible to save objects in sharedPreferences object
-//            Gson gson = new Gson();
-//            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage);
-//
-//            String jsonFormattedObject = gson.toJson(orderItem);
-//            myPrefEditor.putString("lastOrder", jsonFormattedObject);
-//            myPrefEditor.commit();
-//
-//            returnToMain = new Intent(this, MainActivity.class);
-//            returnToMain.putExtra("order", "order");
-//            startActivity(returnToMain);
-
-
-
-
-
-
-            //Fall back on
-            returnToMain = new Intent(this, MainActivity.class);
-            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
-            returnToMain.putExtra("order", orderItem);
-            returnToMain.putExtra("userInfo", user);
-            startActivity(returnToMain);
-
+        if (currentQuantityOfItem < itemQuantity && currentQuantityOfItem != 0) {
+            String message = "Error: Only " + currentQuantityOfItem + " " + itemName + "'s left in stock";
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
+        else if (currentQuantityOfItem == 0) {
+            Toast.makeText(this, "Error: Item out of stock.", Toast.LENGTH_LONG).show();
         }
 
-        else if (addToCartButton.getText().toString().equals("EDIT ITEM")){
-
-            //Will have to change this so that it edits
-            returnToCart = new Intent(this, ShoppingCartPage.class);
-            orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type, isRedeemed);
-            returnToCart.putExtra("editedOrder", orderItem);
-            returnToCart.putExtra("position", editPosition);
-            returnToCart.putExtra("userInfo", user);
-            startActivity(returnToCart);
-
-
-        }
-        //Error for some reason
         else {
 
+
+            if (addToCartButton.getText().toString().equals("ADD TO CART")) {
+
+                //Fall back on
+                returnToMain = new Intent(this, MainActivity.class);
+                orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type);
+                returnToMain.putExtra("order", orderItem);
+                returnToMain.putExtra("userInfo", user);
+                startActivity(returnToMain);
+
+            } else if (addToCartButton.getText().toString().equals("EDIT ITEM")) {
+
+                //Will have to change this so that it edits
+                returnToCart = new Intent(this, ShoppingCartPage.class);
+                orderItem = new Order(itemName, customItems, itemQuantity, itemPrice, itemImage, type, isRedeemed);
+                returnToCart.putExtra("editedOrder", orderItem);
+                returnToCart.putExtra("position", editPosition);
+                returnToCart.putExtra("userInfo", user);
+                startActivity(returnToCart);
+
+
+            }
+            //Error for some reason
+            else {
+
+            }
         }
-
-
 
 
     }
+
+
+    @Override
+    public void onBackPressed() {
+        if (!whereWeCameFrom.hasExtra("orderToEdit")) {
+            super.onBackPressed();
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        storeDatabase.shutDown();
+        super.onDestroy();
+    }
+
 }

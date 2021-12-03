@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/goToCartAsManager"
+        android:title="MY CART" />
+    <item android:title="@string/ManagerPortal"
+        android:id="@+id/goToManagerPortal"/>
+    <item
+        android:id="@+id/logoutAsManager"
+        android:title="LOGOUT" />
+
+</menu>

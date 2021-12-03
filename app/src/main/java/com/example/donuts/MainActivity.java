@@ -1,6 +1,8 @@
 package com.example.donuts;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -14,8 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     //Shared preferences object
     private SharedPreferences myPrefs;
 
+    String role;
 
 
     private User user;
@@ -81,20 +82,23 @@ public class MainActivity extends AppCompatActivity {
             //Need to clear json file when user logins in
             clearCart();
 
+
+
         }
+
+
 
 
         if (intent.hasExtra("userInfo")) {
             user = (User) intent.getSerializableExtra("userInfo");
+            //saveUserToSharedPreferences();
         }
 
-
-
+        //Initialize user role obtained from database
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
-        //Initialize editor for myPref
-        SharedPreferences.Editor myPrefEditor = myPrefs.edit();
-        //Initialize gson object so it's possible to save objects in sharedPreferences object
-        Gson gson = new Gson();
+        role = myPrefs.getString("userRole", "");
+
+
 
 
         //When logging in or creating an account we have to clear the JSON file
@@ -108,38 +112,11 @@ public class MainActivity extends AppCompatActivity {
         if (intent.hasExtra("order")) {
 
 
-
-
-            //Preference code
-            //Fall back on
-            /////////////////////////
-//            String jsonFormattedObject = myPrefs.getString("lastOrder", "");
-//
-//            Set<String> s = myPrefs.getStringSet("orderList", new HashSet<>());
-//
-//            s.add(jsonFormattedObject);
-//
-//            //Must dp this so set is saved
-//            myPrefEditor.clear();
-//
-//            myPrefEditor.putStringSet("orderList", s);
-//            myPrefEditor.commit();
-//
-//            Toast.makeText(this, "Item successfully added to cart!", Toast.LENGTH_SHORT).show();
-
-            ///////////////////////////
-
-
-
-
               //Fall back on
             Order orderItem = (Order) intent.getSerializableExtra("order");
             //userOrders.add(orderItem);
             saveOrderToCart(orderItem);
             Toast.makeText(this, "Item successfully added to cart!", Toast.LENGTH_SHORT).show();
-
-
-
 
         }
 
@@ -162,44 +139,107 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_menu, menu);
+        if (role.equals("Regular")) {
+            getMenuInflater().inflate(R.menu.regular_user_menu, menu);
+        }
+        else {
+            getMenuInflater().inflate(R.menu.manager_home_menu, menu);
+        }
         return true;
     }
+
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
 
-
-
-        // Now check for menu items
-        if (item.getItemId() == R.id.goToHomePage) {
-            Toast.makeText(this, "Home Page", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (item.getItemId() == R.id.goToUserPortal) {
-            Intent i = new Intent(this, UserPortal.class);
-            startActivity(i);
-            return true;
-        } else if (item.getItemId() == R.id.goToShoppingCart) {
+        if (item.getItemId() == R.id.goToShoppingCart && role.equals("Regular")) {
 
             Intent goToCart = new Intent(this, ShoppingCartPage.class);
             //Fall back on
             goToCart.putExtra("orders", userOrders);
             goToCart.putExtra("userInfo", user);
             startActivity(goToCart);
-
-            //Fall back on for shared preferences
-//            goToCart.putExtra("orders", "userOrders");
-//            startActivity(goToCart);
-
             return true;
+
+        }
+        else if (item.getItemId() == R.id.goToUserProfile && role.equals("Regular")) {
+            Intent goToUserProfile = new Intent(this, UserProfilePage.class);
+            goToUserProfile.putExtra("userInfo", user);
+            startActivity(goToUserProfile);
+            return true;
+        }
+        else if (item.getItemId() == R.id.logout && role.equals("Regular")) {
+            showLogoutWarning();
+            return true;
+        }
+
+        else if (item.getItemId() == R.id.goToCartAsManager) {
+
+
+            Intent goToCart = new Intent(this, ShoppingCartPage.class);
+            //Fall back on
+            goToCart.putExtra("orders", userOrders);
+            goToCart.putExtra("userInfo", user);
+            startActivity(goToCart);
+        }
+
+        else if (item.getItemId() == R.id.goToManagerPortal) {
+
+
+            Intent goToPortal = new Intent(this, ManagerPortal.class);
+            goToPortal.putExtra("userInfo", user);
+            startActivity(goToPortal);
+
+        }
+        else if (item.getItemId() == R.id.logoutAsManager) {
+            showLogoutWarning();
+            return true;
+
         }
         else {
             return super.onOptionsItemSelected(item);
         }
+        return true;
+    }
+
+
+
+
+
+
+    private void logoutOfSystem() {
+        SharedPreferences.Editor myPrefEditor = myPrefs.edit();
+        myPrefEditor.clear();
+        myPrefEditor.commit();
+
+        Intent i = new Intent(this, LoginPage.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showLogoutWarning();
+        //super.onBackPressed();
+    }
+
+
+    public void showLogoutWarning() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Are you sure you want to log out of the system?");
+        builder.setPositiveButton("YES", (dialogInterface, i) -> logoutOfSystem());
+        builder.setNegativeButton("NO", (dialogInterface, i) -> { });
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
     }
+
+
+
+
+
 
 
     public void imageClicked(View v) {

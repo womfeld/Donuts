@@ -11,7 +11,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Donuts"
         tools:replace="android:theme">
-        <activity android:name=".OrderCompletePage"></activity>
+        <activity android:name=".ReportPage"></activity>
+        <activity android:name=".StartOrderForUserPage" />
+        <activity android:name=".ManageUsers" />
+        <activity android:name=".ReviewPage" />
+        <activity android:name=".UserProfilePage" />
+        <activity android:name=".ReviewsPage" />
+        <activity android:name=".OrderCompletePage" />
         <activity android:name=".InventoryUpdatePage" />
         <activity android:name=".MainActivity" />
         <activity android:name=".CreateAccount" />
@@ -19,7 +25,7 @@
         <activity android:name=".ShoppingCartPage" />
         <activity android:name=".OrderPage" />
         <activity android:name=".MenuOptionsPage" />
-        <activity android:name=".UserPortal" />
+        <activity android:name=".ManagerPortal" />
         <activity android:name=".LoginPage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

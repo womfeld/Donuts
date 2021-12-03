@@ -3,13 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/goToHomePage"
-        android:title="@string/go_to_hp" />
+        android:id="@+id/goToShoppingCart"
+        android:title="@string/my_cart" />
     <item
-        android:id="@+id/goToUserPortal"
-        android:title="@string/go_to_mp" />
-    <item android:title="@string/my_cart"
-        android:id="@+id/goToShoppingCart" />
+        android:id="@+id/goToUserProfile"
+        android:title="MY PROFILE" />
+    <item
+        android:id="@+id/logout"
+        android:title="LOGOUT" />
 
 
 </menu>

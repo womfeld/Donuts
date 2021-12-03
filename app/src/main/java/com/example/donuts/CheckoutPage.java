@@ -65,9 +65,7 @@ public class CheckoutPage extends AppCompatActivity {
 
         }
 
-        if (intent.hasExtra("userInfo")) {
-            user = (User) intent.getSerializableExtra("userInfo");
-        }
+
 
         if (intent.hasExtra("totalPrice")) {
 
@@ -81,6 +79,13 @@ public class CheckoutPage extends AppCompatActivity {
             //Error of some kind
 
         }
+
+
+        myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
+        String u = myPrefs.getString("currentUserName", "");
+        String p = myPrefs.getString("currentPassword", "");
+        user = storeDatabase.loadUser(u, p);
+
 
 
 
@@ -122,39 +127,64 @@ public class CheckoutPage extends AppCompatActivity {
 
     public  void editOrderClicked(View v) {
 
-
-
-
         Intent i = new Intent(this, ShoppingCartPage.class);
+        i.putExtra("checkoutEdit", "checkoutEdit");
         startActivity(i);
     }
 
 
     public void submitOrderClicked(View v) {
 
-        //Add user order
-        String userName = user.getUserName();
-        //totalPrice;
-        storeDatabase.addOrder(totalPrice, userName);
-
-
-        //Add customer purchase details
-        storeDatabase.addCustomer(userName, creditNumberInput.getText().toString(), Integer.parseInt(cvvInput.getText().toString()), addressInput.getText().toString());
-
-
-        //Update Inventory
-        storeDatabase.updateInventory(updatedInventoryItems);
-
-
         //Update reward points
         myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
         int rewardPointsRemaining = myPrefs.getInt("remainingRewardPoints", 0);
         rewardPointsEarned = (int) totalPrice;
         int newRewardPointsValue = rewardPointsEarned + rewardPointsRemaining;
-        storeDatabase.updateRewardPoints(userName, newRewardPointsValue);
+        //storeDatabase.updateRewardPoints(userName, newRewardPointsValue);
+
+
+        //These if statements are to determine if manager is ordering for user
+
+        String temp = myPrefs.getString("userToOrderFor", "");
+        //Kind of hacky coding but...
+        if (!temp.equals("")) {
+            storeDatabase.updateRewardPoints(temp, newRewardPointsValue);
+        }
+        else {
+            storeDatabase.updateRewardPoints(user.getUserName(), newRewardPointsValue);
+        }
+
+        //Add user order
+        //String userName = user.getUserName();
+        //storeDatabase.addOrder(totalPrice, userName);
+        if (!temp.equals("")) {
+            storeDatabase.addOrder(totalPrice, temp);
+        }
+        else {
+            storeDatabase.addOrder(totalPrice, user.getUserName());
+        }
+
+
+        //Add customer purchase details
+        if (!temp.equals("")) {
+
+            storeDatabase.addCustomer(temp, creditNumberInput.getText().toString(), Integer.parseInt(cvvInput.getText().toString()), addressInput.getText().toString());
+
+        }
+        else {
+
+            storeDatabase.addCustomer(user.getUserName(), creditNumberInput.getText().toString(), Integer.parseInt(cvvInput.getText().toString()), addressInput.getText().toString());
+
+        }
+        //Update Inventory
+        storeDatabase.updateInventory(updatedInventoryItems);
+
+
+
 
 
         Intent i = new Intent(this, OrderCompletePage.class);
+        i.putExtra("userInfo", user);
         startActivity(i);
 
 

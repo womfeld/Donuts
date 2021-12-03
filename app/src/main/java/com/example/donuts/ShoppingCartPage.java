@@ -47,7 +47,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
     RecyclerView.Adapter cAdapter;
     RecyclerView.LayoutManager layoutManager;
 
-    public ArrayList<Order> ordersList = new ArrayList<>();;
+    public ArrayList<Order> ordersList = new ArrayList<>();
 
     private Order revisedOrder;
     private int position;
@@ -148,6 +148,12 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             revisedOrder = (Order) intent.getSerializableExtra("editedOrder");
             position = intent.getIntExtra("position", 0);
 
+            //This intent does not save user so will have to load the user from database
+            String u = myPrefs.getString("currentUserName", "");
+            String p = myPrefs.getString("currentPassword", "");
+
+            user = storeDatabase.loadUser(u, p);
+
             //Need to load the current cart, revise it to account for edited item, then save the changes
             ordersList.addAll(loadFile());
             ordersList.remove(position);
@@ -156,6 +162,20 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             cAdapter.notifyDataSetChanged();
 
 
+
+        }
+
+        else if (intent.hasExtra("checkoutEdit")) {
+
+            //This intent does not save user so will have to load the user from database
+            String u = myPrefs.getString("currentUserName", "");
+            String p = myPrefs.getString("currentPassword", "");
+
+            user = storeDatabase.loadUser(u, p);
+
+            //Readd everything to cart
+            ordersList.addAll(loadFile());
+            cAdapter.notifyDataSetChanged();
 
         }
         else {
@@ -201,6 +221,7 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
         // Now check for menu items
         if (item.getItemId() == R.id.home_icon_cartPage) {
             Intent i = new Intent(this, MainActivity.class);
+            i.putExtra("userInfo", user);
             startActivity(i);
             return true;
         } else if (item.getItemId() == R.id.clear_icon) {
@@ -213,7 +234,15 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
             //Need to reset the reward points
             myPrefs = getSharedPreferences("MY_PREFS", Context.MODE_PRIVATE);
             SharedPreferences.Editor myPrefEditor = myPrefs.edit();
-            myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
+
+            //Should fix potential issue with clear cart signed in as manager
+            int temp = myPrefs.getInt("initialRewardPoints",-1);
+            if (temp != -1) {
+                myPrefEditor.putInt("remainingRewardPoints", temp);
+            }
+            else {
+                myPrefEditor.putInt("remainingRewardPoints", user.getRewardPoints());
+            }
             myPrefEditor.commit();
             return true;
         } else {
@@ -325,7 +354,6 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
         Intent goToCheckout = new Intent(this, CheckoutPage.class);
         goToCheckout.putExtra("totalPrice", totalPrice);
-        goToCheckout.putExtra("userInfo", user);
         goToCheckout.putExtra("updatedInventoryItems", updatedInventoryItems);
         startActivity(goToCheckout);
     }
@@ -357,6 +385,12 @@ public class ShoppingCartPage extends AppCompatActivity implements View.OnClickL
 
 
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        storeDatabase.shutDown();
+        super.onDestroy();
     }
 
 

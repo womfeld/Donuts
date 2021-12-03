@@ -53,31 +53,31 @@ public class MenuOptionsPage extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.action_menu, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-
-        // Now check for menu items
-        if (item.getItemId() == R.id.goToHomePage) {
-            Intent home = new Intent(this, MainActivity.class);
-            startActivity(home);
-            return true;
-        } else if (item.getItemId() == R.id.goToUserPortal) {
-            Intent intent = new Intent(this, UserPortal.class);
-            startActivity(intent);
-            return true;
-        } else if (item.getItemId() == R.id.goToShoppingCart) {
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.manager_home_menu, menu);
+//        return true;
+//    }
+//
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//
+//
+//        // Now check for menu items
+//        if (item.getItemId() == R.id.goToHomePage) {
+//            Intent home = new Intent(this, MainActivity.class);
+//            startActivity(home);
+//            return true;
+//        } else if (item.getItemId() == R.id.leaveAReview) {
+//            Intent intent = new Intent(this, UserPortal.class);
+//            startActivity(intent);
+//            return true;
+//        } else if (item.getItemId() == R.id.goToShoppingCart) {
+//            return true;
+//        } else {
+//            return super.onOptionsItemSelected(item);
+//        }
+//
+//    }
 
 
 

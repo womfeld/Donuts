@@ -20,10 +20,10 @@ public class InventoryViewHolder extends RecyclerView.ViewHolder {
     public InventoryViewHolder(View itemView) {
         super(itemView);
 
-        title = itemView.findViewById(R.id.inventoryTitle);
+        title = itemView.findViewById(R.id.reviewTitle);
         plusButton = itemView.findViewById(R.id.plusButton);
         minusButton = itemView.findViewById(R.id.minusButton);
-        quantity = itemView.findViewById(R.id.inventoryStockLabel);
+        quantity = itemView.findViewById(R.id.reviewLabel);
 //        input = itemView.findViewById(R.id.inventoryInput);
 
     }

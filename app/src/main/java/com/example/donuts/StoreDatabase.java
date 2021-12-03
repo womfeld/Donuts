@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StoreDatabase extends SQLiteOpenHelper {
@@ -37,7 +38,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-    //Has foreign key user id
+    //Has foreign key user name
     public static final String CUSTOMERS_TABLE = "CUSTOMER_TABLE";
     public static final String COLUMN_CUSTOMER_CREDIT_CARD_NUM = "CREDIT_CARD_NUM";
     public static final String COLUMN_CUSTOMER_CREDIT_CARD_CVV = "CREDIT_CARD_CVV";
@@ -153,7 +154,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-    public User loadUser(String un, String pw, LoginPage loginPage) {
+    public User loadUser(String un, String pw) {
 
         User u;
 
@@ -174,7 +175,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
         else {
             u = new User("Login unsuccessful");
-            Toast.makeText(loginPage, "No user found.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(loginPage, "No user found.", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -182,6 +183,34 @@ public class StoreDatabase extends SQLiteOpenHelper {
     }
 
 
+    //Onky called in manager/employee portal
+    public User loadUserForManager(String un) {
+
+        User u;
+
+        Cursor cursor = database.rawQuery("SELECT * FROM USER_TABLE WHERE USERNAME = ?", new String[] {un});
+
+        if (cursor != null) {
+            //Delete later
+
+            cursor.moveToFirst();
+
+            u = new User (cursor.getString(cursor.getColumnIndex(COLUMN_USERNAME)), cursor.getString(cursor.getColumnIndex(COLUMN_USER_PASSWORD)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_USER_FIRST_NAME)), cursor.getString(cursor.getColumnIndex(COLUMN_USER_LAST_NAME)),
+                    cursor.getString(cursor.getColumnIndex(COLUMN_USER_ISBANNED)), cursor.getInt(cursor.getColumnIndex(COLUMN_USER_REWARD)), cursor.getString(cursor.getColumnIndex(COLUMN_USER_ROLE))
+            );
+
+            cursor.close();
+        }
+
+        else {
+            u = new User("Login unsuccessful");
+            //Toast.makeText(loginPage, "No user found.", Toast.LENGTH_SHORT).show();
+        }
+
+
+        return u;
+    }
 
 
     //Adds a user to the Database
@@ -200,6 +229,10 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
     }
 
+    public void deleteUser(String userName) {
+        database.delete(USERS_TABLE, COLUMN_USERNAME + " = ?", new String[]{userName});
+    }
+
 
 
     public void addCustomer(String userName, String cardNumber, int cvv, String address) {
@@ -211,6 +244,36 @@ public class StoreDatabase extends SQLiteOpenHelper {
         database.insert(CUSTOMERS_TABLE, null, values);
 
     }
+
+
+    //Onky called in manager/employee portal
+    public int getInventoryItemQuantity(String n) {
+
+        int q;
+
+        Cursor cursor = database.rawQuery("SELECT ITEM_QUANTITY FROM INVENTORY_TABLE WHERE ITEM_NAME = ?", new String[] {n});
+
+        if (cursor != null) {
+            //Delete later
+
+            cursor.moveToFirst();
+
+
+            q = cursor.getInt(0);
+
+            cursor.close();
+        }
+
+        else {
+            //Change later
+            q = -5;
+        }
+
+
+        return q;
+    }
+
+
 
 
     public void addEmployee(String fn, String ln, String job, String salary) {
@@ -225,7 +288,6 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
     public void addItemToInventory(String item, int qty, double price) {
 
-
         ContentValues values = new ContentValues();
         values.put(COLUMN_INVENTORY_NAME, item);
         values.put(COLUMN_INVENTORY_QUANTITY, qty);
@@ -233,9 +295,8 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
         database.insert(INVENTORY_TABLE, null, values);
 
-
-
     }
+
 
 
     public void addOrder(Double total, String userName) {
@@ -244,6 +305,14 @@ public class StoreDatabase extends SQLiteOpenHelper {
         values.put(COLUMN_USERNAME, userName);
         database.insert(ORDERS_TABLE, null, values);
 
+    }
+
+    public void addReview(String firstName, int stars, String comment) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_REVIEW_FIRST_NAME, firstName);
+        values.put(COLUMN_REVIEW_STARS, stars);
+        values.put(COLUMN_REVIEW_COMMENT, comment);
+        database.insert(REVIEW_TABLE, null, values);
     }
 
 
@@ -300,15 +369,82 @@ public class StoreDatabase extends SQLiteOpenHelper {
     }
 
 
+
+    public ArrayList<Review> loadReviews() {
+        ArrayList<Review> reviewList = new ArrayList<>();
+        Cursor cursor = database.query(
+                REVIEW_TABLE,  // The table to query
+                new String[]{"R_ID", COLUMN_REVIEW_FIRST_NAME, COLUMN_REVIEW_STARS, COLUMN_REVIEW_COMMENT}, // The columns to return
+                null, // The columns for the WHERE clause
+                null, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                null); // The sort order
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            for (int i = 0; i < cursor.getCount(); i++) {
+                String name = cursor.getString(1);
+                int stars = cursor.getInt(2);
+                String description = cursor.getString(3);
+
+                Review r = new Review(name, description, stars);
+                reviewList.add(r);
+
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        return reviewList;
+    }
+
+
+
+   public HashMap<String, Double> getOrders() {
+        HashMap<String, Double> orderList = new HashMap<>();
+        Cursor cursor = database.query(
+                ORDERS_TABLE,  // The table to query
+                new String[]{"O_ID", COLUMN_ORDER_SPENT, COLUMN_USERNAME}, // The columns to return
+                null, // The columns for the WHERE clause
+                null, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                null); // The sort order
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            for (int i = 0; i < cursor.getCount(); i++) {
+                double moneyMade = cursor.getInt(1);
+                String userN = cursor.getString(2);
+
+
+                orderList.put(userN, moneyMade);
+
+
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+
+        return orderList;
+    }
+
+
     public void updateRewardPoints(String userName, int num) {
 
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_USERNAME, userName);
         cv.put(COLUMN_USER_REWARD, num);
 
-        database.update(USERS_TABLE, cv, "POINTS_EARNED = ?", new String[]{userName});
+        database.update(USERS_TABLE, cv, "USERNAME = ?", new String[]{userName});
 
     }
+
+
 
 
 

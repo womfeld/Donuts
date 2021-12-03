@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 
@@ -25,6 +27,9 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
     private ArrayList<String> menuItemNames;
     public ArrayList<Integer>menuItemQuantities;
 
+    StoreDatabase storeDatabase;
+
+    public User user;
 
 
 
@@ -36,23 +41,24 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory_update_page);
 
+        storeDatabase = new StoreDatabase(this);
 
-        //Change this later, but this code initializes the menu items name list and the number present in the invetory
-
-        menuItemNames = new ArrayList<>();
-
-        String[] tempArray = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter",
-                "Coffee", "Iced Coffee", "Latte", "Macchiato", "Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
-        for (String s : tempArray) {
-            menuItemNames.add(s);
-
+        Intent intent = getIntent();
+        if (intent.hasExtra("userInfo")) {
+            user = (User) intent.getSerializableExtra("userInfo");
         }
 
+
+        HashMap<String, Integer> fullInventory = storeDatabase.loadInventory();
+        menuItemNames = new ArrayList<>();
         menuItemQuantities = new ArrayList<>();
 
-        for (int i = 0; i < 12; i++) {
-            menuItemQuantities.add(2);
+        for (String s : fullInventory.keySet()) {
+            menuItemNames.add(s);
+            menuItemQuantities.add(fullInventory.get(s));
         }
+
+
 
 
         recyclerView = findViewById(R.id.inventoryRecycler);
@@ -95,15 +101,23 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
             map.put(itemName, updatedAmount);
 
 
-            //Do an SQL query hereto update inventory in database
         }
 
+        storeDatabase.updateInventory(map);
+        Toast.makeText(this, "Inventory Updated!", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onClick(View v) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, ManagerPortal.class);
+        i.putExtra("userInfo", user);
+        startActivity(i);
     }
 
     @Override
@@ -115,7 +129,13 @@ public class InventoryUpdatePage extends AppCompatActivity implements View.OnCli
     @Override
     protected void onResume() {
         super.onResume();
-
-
     }
+
+    @Override
+    protected void onDestroy() {
+        storeDatabase.shutDown();
+        super.onDestroy();
+    }
+
+
 }
