@@ -43,8 +43,8 @@
 
     <EditText
         android:id="@+id/EditText1"
-        android:layout_width="385dp"
-        android:layout_height="280dp"
+        android:layout_width="316dp"
+        android:layout_height="275dp"
         android:gravity="start"
         app:layout_constraintBottom_toTopOf="@+id/guideline27"
         app:layout_constraintEnd_toEndOf="parent"

@@ -5,21 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 public class ManagerPortal extends AppCompatActivity {
 
@@ -32,7 +25,7 @@ public class ManagerPortal extends AppCompatActivity {
 
     public SharedPreferences myPrefs;
 
-    public HashMap<String, Double> mp = new HashMap<>();
+    public ArrayList<Double> ords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,16 +108,16 @@ public class ManagerPortal extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void getReportClicked(View v) {
-        mp.putAll(storeDatabase.getOrders());
+        ords.addAll(storeDatabase.getOrders());
 
         String name = "";
 
-        HashMap<String, Integer> tempMap = new HashMap<>();
+        //HashMap<String, Integer> tempMap = new HashMap<>();
 
         double total = 0;
 
-        for (String k: mp.keySet()) {
-            total = total + mp.get(k);
+        for (Double k: ords) {
+            total = total + k;
         }
 
         Intent i = new Intent(this, ReportPage.class);

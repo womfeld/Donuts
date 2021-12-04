@@ -70,19 +70,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-    //e_id IS PRIMARY
-    public static final String EMPLOYEES_TABLE = "EMPLOYEE_TABLE";
-    public static final String COLUMN_EMPLOYEE_FIRST_NAME = "EMPLOYEE_FIRST_NAME";
-    public static final String COLUMN_EMPLOYEE_LAST_NAME = "EMPLOYEE_LAST_NAME";
-    public static final String COLUMN_EMPLOYEE_JOB = "EMPLOYEE_JOB";
-    public static final String COLUMN_EMPLOYEE_SALARY = "EMPLOYEE_SALARY";
 
-    private static final String SQL_CREATE_EMPLOYEE_TABLE =
-            "CREATE TABLE " + EMPLOYEES_TABLE + " (" +
-                    COLUMN_EMPLOYEE_FIRST_NAME + " TEXT," +
-                    COLUMN_EMPLOYEE_LAST_NAME + " TEXT," +
-                    COLUMN_EMPLOYEE_JOB + " TEXT," +
-                    COLUMN_EMPLOYEE_SALARY + " TEXT not null)";
 
 
 
@@ -93,7 +81,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ORDER_TABLE =
             "CREATE TABLE " + ORDERS_TABLE + " (" +
                     "O_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_ORDER_SPENT + " REAL," +
+                    COLUMN_ORDER_SPENT + " TEXT," +
                     COLUMN_USERNAME + " TEXT," +
                     " FOREIGN KEY ("+ COLUMN_USERNAME +") REFERENCES "+USERS_TABLE+"("+ COLUMN_USERNAME +"))";
 
@@ -132,7 +120,6 @@ public class StoreDatabase extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_USER_TABLE);
         db.execSQL(SQL_CREATE_CUSTOMER_TABLE);
         db.execSQL(SQL_CREATE_INVENTORY_TABLE);
-        db.execSQL(SQL_CREATE_EMPLOYEE_TABLE);
         db.execSQL(SQL_CREATE_ORDER_TABLE);
         db.execSQL(SQL_CREATE_REVIEW_TABLE);
 
@@ -276,15 +263,6 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-    public void addEmployee(String fn, String ln, String job, String salary) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_EMPLOYEE_FIRST_NAME, fn);
-        values.put(COLUMN_EMPLOYEE_LAST_NAME, ln);
-        values.put(COLUMN_EMPLOYEE_JOB, job);
-        values.put(COLUMN_EMPLOYEE_SALARY, salary);
-        database.insert(EMPLOYEES_TABLE, null, values);
-
-    }
 
     public void addItemToInventory(String item, int qty, double price) {
 
@@ -299,7 +277,7 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-    public void addOrder(Double total, String userName) {
+    public void addOrder(String total, String userName) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_ORDER_SPENT, total);
         values.put(COLUMN_USERNAME, userName);
@@ -403,8 +381,8 @@ public class StoreDatabase extends SQLiteOpenHelper {
 
 
 
-   public HashMap<String, Double> getOrders() {
-        HashMap<String, Double> orderList = new HashMap<>();
+   public ArrayList<Double> getOrders() {
+        ArrayList<Double> orderList = new ArrayList<>();
         Cursor cursor = database.query(
                 ORDERS_TABLE,  // The table to query
                 new String[]{"O_ID", COLUMN_ORDER_SPENT, COLUMN_USERNAME}, // The columns to return
@@ -418,11 +396,12 @@ public class StoreDatabase extends SQLiteOpenHelper {
             cursor.moveToFirst();
 
             for (int i = 0; i < cursor.getCount(); i++) {
-                double moneyMade = cursor.getInt(1);
-                String userN = cursor.getString(2);
+                String moneyMadeString = cursor.getString(1);
+                //String userN = cursor.getString(2);
 
+                double moneyMade = Double.parseDouble(moneyMadeString);
 
-                orderList.put(userN, moneyMade);
+                orderList.add(moneyMade);
 
 
                 cursor.moveToNext();

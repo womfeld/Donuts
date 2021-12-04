@@ -55,19 +55,34 @@ public class CreateAccount extends AppCompatActivity {
     public void createAccountClicked(View v) {
 
 
-        if (!firstNameInput.getText().toString().isEmpty() && !lastNameInput.getText().toString().isEmpty()
-        && !newUserNameInput.getText().toString().isEmpty() && !newPassWordInput.getText().toString().isEmpty()) {
+        if (!newUserNameInput.getText().toString().isEmpty() && !newPassWordInput.getText().toString().isEmpty()
+        && !firstNameInput.getText().toString().isEmpty() && !lastNameInput.getText().toString().isEmpty()) {
 
-            User newUser = new User(firstNameInput.getText().toString(), lastNameInput.getText().toString(),
-                    newUserNameInput.getText().toString(), newPassWordInput.getText().toString(), "No", 0, "Regular");
+            User newUser = new User(newUserNameInput.getText().toString(), newPassWordInput.getText().toString(),
+                    firstNameInput.getText().toString(), lastNameInput.getText().toString(), "No", 0, "Regular");
 
-            configureUserSharedPreferences(newUser);
+            try {
+                User temp = storeDatabase.loadUserForManager(newUserNameInput.getText().toString());
+                Toast.makeText(this, "Error: User is already registered in the system.", Toast.LENGTH_SHORT).show();
+            }
+            catch (Exception e) {
+                configureUserSharedPreferences(newUser);
 
-            storeDatabase.addUser(newUser);
+                storeDatabase.addUser(newUser);
 
-            Intent i = new Intent(this, MainActivity.class);
-            i.putExtra("newUser", newUser);
-            startActivity(i);
+                Intent i = new Intent(this, MainActivity.class);
+                i.putExtra("newUser", newUser);
+                startActivity(i);
+            }
+
+
+//            configureUserSharedPreferences(newUser);
+//
+//            storeDatabase.addUser(newUser);
+//
+//            Intent i = new Intent(this, MainActivity.class);
+//            i.putExtra("newUser", newUser);
+//            startActivity(i);
 
         }
         else {

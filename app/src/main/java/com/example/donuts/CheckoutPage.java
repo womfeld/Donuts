@@ -158,10 +158,10 @@ public class CheckoutPage extends AppCompatActivity {
         //String userName = user.getUserName();
         //storeDatabase.addOrder(totalPrice, userName);
         if (!temp.equals("")) {
-            storeDatabase.addOrder(totalPrice, temp);
+            storeDatabase.addOrder(String.format(Locale.US, "%.2f",totalPrice), temp);
         }
         else {
-            storeDatabase.addOrder(totalPrice, user.getUserName());
+            storeDatabase.addOrder(String.format(Locale.US, "%.2f",totalPrice), user.getUserName());
         }
 
 

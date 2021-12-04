@@ -39,9 +39,9 @@ public class LoginPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
-        clearCart();
+        //NEEDclearCart();
 
-        //this.deleteDatabase("MontroseDonutsDeliDB");
+        //this.deleteDatabase("DonutStoreDB");
 
 
         storeDatabase = new StoreDatabase(this);
@@ -49,10 +49,10 @@ public class LoginPage extends AppCompatActivity {
 
 
         //Adds the manager
-         //storeDatabase.addUser(new User("Manager", "Will", "manager", "asdf3", "No", 0, "Manager"));
-
-
-
+//         storeDatabase.addUser(new User("Manager", "Will", "manager", "asdf3", "No", 0, "Manager"));
+//
+//
+//
 //        String[] tempArray = {"Chocolate Donut", "Powdered Donut", "Glazed Donut", "Jelly Donut", "Apple Fritter",
 //                "Coffee", "Iced Coffee", "Latte", "Macchiato", "Plain Bagel", "Sesame Bagel", "Cinnamon Bagel"};
 //        int[] qtys = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
